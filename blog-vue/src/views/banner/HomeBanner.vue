@@ -36,11 +36,10 @@
 import {reactive, ref} from "vue";
 import {useStore} from "vuex"
 
-import Main from "@/components/layout/MainContent";
 
 export default {
   name: "Home",
-  components: {Main},
+  components: {},
   setup() {
     // 动画相关控制
     let showInfoAnimation = ref(true);

@@ -1,21 +1,29 @@
 <template>
   <!-- 封面 -->
   <HomeBanner></HomeBanner>
-  <MainContent>
-    <div style="height: 5000px; width: 1200px; background-color: unset;"></div>
-  </MainContent>
+  <ul v-infinite-scroll="load">
+    <li v-for="i in count" :key="i" class="infinite-list-item">{{ i }}</li>
+  </ul>
 </template>
 
 <script>
 
 import {ref, reactive} from "vue";
-import MainContent from "@/components/layout/MainContent";
 import HomeBanner from "@/views/banner/HomeBanner";
 
 export default {
   name: "Home",
-  components: {MainContent, HomeBanner},
+  components: {HomeBanner},
   setup() {
+    const count = ref(0)
+    const load = () => {
+      if (count.value >= 100) {
+        return;
+      }
+      count.value += 2
+    }
+
+    return {count, load};
 
   }
 }

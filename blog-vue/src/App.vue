@@ -13,7 +13,8 @@
     <!-- 顶部导航栏组件 -->
     <TopNavigator></TopNavigator>
     <!-- 主内容布局组件 -->
-    <router-view :key="$route.fullPath"></router-view>
+    <router-view :key="$route.fullPath">
+    </router-view>
     <!-- 页脚 -->
     <Footer></Footer>
     <!--  <div style="height: 10000px"></div>-->
@@ -28,7 +29,6 @@ import {ref} from "vue"
 
 
 import TopNavigator from "@/components/layout/TopNavigator";
-import Main from "@/components/layout/MainContent";
 import Footer from "@/components/layout/Footer";
 
 
@@ -37,7 +37,6 @@ export default {
   name: 'App',
   components: {
     Footer,
-    Main,
     TopNavigator,
   },
   setup() {
@@ -116,6 +115,29 @@ body {
 
 
 /* end=====设置x轴不出现滚动条=====end */
+
+
+/* 主容器样式 */
+.main-container {
+  position: relative;
+  top: 24px;
+}
+
+
+.content {
+  position: relative;
+  height: 100%;
+  width: 1300px;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+
+  backdrop-filter: saturate(150%) blur(8px);
+  -webkit-backdrop-filter: saturate(150%) blur(8px);
+  background-color: rgba(0, 0, 0, .15);
+  border-radius: 16px;
+}
 
 
 /* 整体背景样式 */
