@@ -195,6 +195,7 @@ ul {
 /* 导航栏按钮 */
 .menus-item {
   display: flex;
+  position: relative;
   top: 0;
   margin: 0 0 0 1rem;
   height: 1.35rem;
@@ -203,6 +204,7 @@ ul {
 }
 
 .menus-item a {
+  position: relative;
   height: 100%;
   line-height: 100%;
   transition: all 0.2s;
@@ -214,6 +216,26 @@ ul {
 .menus-item span {
   margin-left: 6px;
   color: white;
+}
+
+.menus-item a:hover {
+  color: #80c8f8;
+}
+
+.menus-item a:hover:after {
+  width: 100%;
+}
+
+.menus-item a:after {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  z-index: -1;
+  width: 0;
+  height: 3px;
+  background-color: #80c8f8;
+  content: "";
+  transition: all 0.3s ease-in-out;
 }
 
 /* 搜索框样式 */

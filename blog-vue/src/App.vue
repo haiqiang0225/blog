@@ -118,20 +118,18 @@ body {
 
 
 /* 主容器样式 */
-.main-container {
+.main-content {
   position: relative;
-  top: 24px;
-}
-
-
-.content {
-  position: relative;
+  display: flex;
   height: 100%;
-  width: 1300px;
-  top: 0;
+  width: auto;
+  max-width: 1300px;
+  min-width: 960px;
+  top: 24px;
   left: 0;
   right: 0;
   margin: 0 auto;
+  padding: 10px;
 
   backdrop-filter: saturate(150%) blur(8px);
   -webkit-backdrop-filter: saturate(150%) blur(8px);
