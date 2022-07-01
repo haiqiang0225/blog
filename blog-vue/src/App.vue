@@ -8,6 +8,7 @@
     <div v-show="onNavChange" class="cover-container">
       <div class="cover"></div>
     </div>
+
     <!-- 网页整体背景色 -->
     <div class="background"></div>
     <!-- 顶部导航栏组件 -->
@@ -48,6 +49,7 @@ export default {
     return {onNavChange}
   },
   methods: {
+    // 全局滚动事件,通过vuex传递
     asyncGlobalScroll(scrollPos) {
       this.$store.commit('asyncScrollTop', {
         scrollTop: scrollPos.scrollTop,
@@ -57,6 +59,7 @@ export default {
   },
   created() {
     this.$watch(() => this.$route.fullPath, (newVal, oldVal) => {
+      // 路由路径改变时检测,并延迟400ms改变状态
       this.onNavChange = true;
       setTimeout(() => {
         this.onNavChange = false;
@@ -133,7 +136,7 @@ body {
 
   backdrop-filter: saturate(150%) blur(8px);
   -webkit-backdrop-filter: saturate(150%) blur(8px);
-  background-color: rgba(0, 0, 0, .15);
+  background-color: rgba(0, 0, 0, .01);
   border-radius: 16px;
 }
 
@@ -272,5 +275,13 @@ body {
     opacity: 1;
   }
 }
+
+
+/* 间隔符样式 */
+.separator {
+  margin: 0 7px;
+  color: #a1a3a9;
+}
+
 
 </style>

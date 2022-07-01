@@ -25,6 +25,7 @@ export default {
   setup(props, context) {
     const route = useRoute();
     let path = ref(route.path);
+    // 使用自定义图片或者默认: 路由path + '-hello.jpg'
     let backgroundImg = props.backgroundImageUrl ||
         require('../../assets/image' + path.value + '-hello.jpg');
     backgroundImg = ref(backgroundImg);
