@@ -23,6 +23,7 @@ import {
     faBarChart,
     faMagnifyingGlass,
     faFileCircleXmark,
+    faSpinner,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -34,7 +35,7 @@ import "animate.css"
 library.add(faHome, faSearch, faTags, faTag, faThLarge, faUserCircle,
     faAt, faAddressCard, faCodeFork, faChevronDown, faMapPin,
     faArrowUp, faCalendarDay, faBarChart, faMagnifyingGlass,
-    faFileCircleXmark);
+    faFileCircleXmark, faSpinner);
 
 
 const app = createApp(App)

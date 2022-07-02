@@ -1,5 +1,11 @@
 <template>
-  <el-scrollbar ref="scrollbarRef" always height="100vh" @scroll="asyncGlobalScroll">
+  <el-scrollbar
+      ref="scrollbarRef"
+      always
+      height="100vh"
+      @scroll="asyncGlobalScroll"
+      noresize
+  >
     <!-- 进度条 -->
     <div v-show="onNavChange" class="loading-container">
       <div class="progress"></div>
@@ -105,15 +111,13 @@ body {
   border-radius: 3px;
 }
 
-/*表格*/
-.el-table__body-wrapper::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+/* 隐藏element ui滚动栏x轴滚动轴 */
+.el-scrollbar__wrap {
+  overflow-x: hidden !important;
 }
-
-.el-table__body-wrapper::-webkit-scrollbar-thumb {
-  background-color: #a1a3a9;
-  border-radius: 3px;
+/* 隐藏element ui滚动栏x轴滚动轴 */
+.is-horizontal {
+  display: none !important;
 }
 
 
@@ -143,7 +147,18 @@ body {
 
 /* 整体背景样式 */
 .background {
-  background-image: linear-gradient(20deg, rgba(210, 188, 188, 0.7), rgb(190, 241, 178), rgba(67, 163, 166, 0.7));
+  background-image: linear-gradient(20deg,
+  rgba(217, 182, 182, 0.7),
+  rgba(231, 144, 103, .7),
+  rgba(231, 144, 103, .7),
+  rgba(190, 241, 178, .7),
+  rgba(190, 241, 178, .7),
+  rgba(67, 163, 166, .7),
+  rgba(67, 163, 166, .7),
+  rgba(78, 188, 175, .7)
+  );
+
+
   width: 100%;
   height: 100vh;
   position: fixed;
