@@ -20,11 +20,14 @@
     <!-- 顶部导航栏组件 -->
     <TopNavigator></TopNavigator>
     <!-- 主内容布局组件 -->
-    <router-view :key="$route.fullPath">
+    <router-view v-slot="{ Component }">
+      <component :is="Component" :key="$route.fullPath"/>
     </router-view>
+
+    <!--    <router-view :key="$route.fullPath"></router-view>-->
     <!-- 页脚 -->
     <Footer></Footer>
-    <!--  <div style="height: 10000px"></div>-->
+
   </el-scrollbar>
 
 
@@ -115,6 +118,7 @@ body {
 .el-scrollbar__wrap {
   overflow-x: hidden !important;
 }
+
 /* 隐藏element ui滚动栏x轴滚动轴 */
 .is-horizontal {
   display: none !important;
@@ -126,22 +130,60 @@ body {
 
 /* 主容器样式 */
 .main-content {
-  position: relative;
+  width: 900px;
   display: flex;
+  padding: 0;
+
+  justify-content: center;
+  position: relative;
   height: 100%;
-  width: auto;
+  /*  35vh是banner的高度 176是footer的高度 剩余是padding啥的*/
+  min-height: calc(100vh - 35vh - 176px - 48px);
   max-width: 1300px;
   min-width: 960px;
   top: 24px;
   left: 0;
   right: 0;
   margin: 0 auto;
-  padding: 10px;
 
   backdrop-filter: saturate(150%) blur(8px);
   -webkit-backdrop-filter: saturate(150%) blur(8px);
   background-color: rgba(0, 0, 0, .01);
   border-radius: 16px;
+
+  animation: main-fade-in-anm 0.35s;
+  animation-duration: .35s;
+
+}
+
+/* 内容区出现动画 */
+.main-fade-in-up {
+  animation: main-fade-in-anm 0.35s;
+  animation-duration: 0.35s;
+}
+
+@keyframes main-fade-in-anm {
+  0% {
+    transform: translateY(120px);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes main-fade-in-anm {
+  0% {
+    transform: translateY(120px);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 
@@ -261,36 +303,6 @@ body {
   }
 }
 
-/* 内容区出现动画 */
-.main-fade-in-up {
-  animation: main-fade-in-anm 0.35s;
-  animation-duration: 0.35s;
-}
-
-@keyframes main-fade-in-anm {
-  0% {
-    transform: translateY(120px);
-    opacity: 0.85;
-  }
-
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@-moz-keyframes main-fade-in-anm {
-  0% {
-    transform: translateY(120px);
-    opacity: 0.85;
-  }
-
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
 
 /* 间隔符样式 */
 .separator {
@@ -298,5 +310,10 @@ body {
   color: #a1a3a9;
 }
 
-
+/* 通用内容区玻璃效果 */
+.content-glass {
+  background-color: rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: saturate(150%) blur(8px);
+  backdrop-filter: saturate(150%) blur(8px);
+}
 </style>

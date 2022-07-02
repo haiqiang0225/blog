@@ -226,7 +226,7 @@ export default {
     const disabledInfiniteLoading = ref(false);
     const load = () => {
       if (articleList.value.length >= 10) {
-        ElMessage('没有更多了');
+        // ElMessage('没有更多了');
         disabledInfiniteLoading.value = true;
         // alert("没有更多了!");
         return;
@@ -291,6 +291,11 @@ export default {
 </script>
 
 <style scoped>
+
+.main-content {
+  width: auto;
+  padding: 10px;
+}
 
 /* 文章容器 */
 .article-list {

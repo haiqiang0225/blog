@@ -2,7 +2,7 @@
 
   <div class="footer-container">
     <h1>@2022 - {{ new Date().getFullYear() }} By HQ</h1>
-    <h2>powerd by:</h2>
+    <h2>powered by:</h2>
     <a href="">Vue3</a>
     <a href="">Vue3</a>
   </div>
@@ -20,10 +20,14 @@ export default {
   line-height: 2;
   position: relative;
   top: 48px;
+  min-height: 96px;
+  max-height: 96px;
   padding: 40px 20px;
   color: #eee;
   font-size: 14px;
   text-align: center;
+
+  bottom: 0;
 
   background: linear-gradient(-45deg, #ee7752, #ce3e75, #23a6d5, #23d5ab);
   background-size: 400% 400%;
