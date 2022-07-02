@@ -154,6 +154,8 @@ body {
   animation: main-fade-in-anm 0.35s;
   animation-duration: .35s;
 
+  box-shadow: 0 0 24px 0 #a1a3a9;
+
 }
 
 /* 内容区出现动画 */

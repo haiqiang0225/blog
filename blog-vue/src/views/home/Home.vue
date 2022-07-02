@@ -353,6 +353,9 @@ export default {
   margin-bottom: 16px;
   border-radius: inherit;
   color: #a1a3a9;
+
+  box-shadow: 0 0 10px 0;
+
 }
 
 /* 文章标题样式 */
