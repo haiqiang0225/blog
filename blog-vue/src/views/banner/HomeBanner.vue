@@ -48,7 +48,7 @@ export default {
     // vuex
     const store = useStore();
     // 获取全局的滚动条
-    let globalScrollBar = store.state.globalScrollBar;
+    const globalScrollBar = store.state.globalScrollBar;
 
     // 控制动画的定时器
     const userAnimationInterval = setInterval(() => {
