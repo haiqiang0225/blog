@@ -15,7 +15,7 @@
 
         <!-- 文章配图 -->
         <router-link
-            to="#"
+            :to="`/article/` + article.id"
             style="height: 100%"
         >
           <el-image
@@ -40,7 +40,9 @@
         <div class="article-info">
           <!--  文章标题    -->
           <div class="title">
-            <router-link to="#">
+            <router-link
+                :to="`/article/` + article.id"
+            >
               {{ article.title }}
             </router-link>
           </div>
@@ -108,7 +110,7 @@
              :key="item.id"
         >
           <router-link
-              to=""
+              :to="`/article/` + item.id"
               style="height: 100%"
           >
             <!--      封面图      -->
@@ -198,13 +200,16 @@ export default {
     const webRunTime = '0 天 0 时 0 分 0 秒';
     const webTotalViewCount = 0;
     const lookRandoms = [{
+      id: 0,
       title: '这少年便是闰土。我认识他时，也不过十多岁，',
       backgroundImageURL: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpe'
     }, {
+      id: 1,
       title: '1',
       backgroundImageURL: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
     },
       {
+        id: 2,
         title: '1',
         backgroundImageURL: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg'
       }];

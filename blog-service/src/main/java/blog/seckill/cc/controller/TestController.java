@@ -21,7 +21,7 @@ public class TestController {
     @GetMapping("/get")
     @Operation()
     public Result get() {
-        return Result.ok();
+        return Result.success();
     }
 
     @RequestMapping("/req")

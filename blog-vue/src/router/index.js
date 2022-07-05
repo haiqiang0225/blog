@@ -4,12 +4,15 @@ import Home from "@/views/home/Home";
 import Category from "@/views/category/Category";
 import Tag from "@/views/tag/Tag";
 import AboutMe from "@/views/about/AboutMe";
+import Article from "@/views/article/Article";
+import MessageBoard from "@/views/message/MessageBoard";
+import Login from "@/views/login/Login";
 
 const routes = [
     {
         path: '/',
         name: 'home',
-        component: Home
+        component: Home,
     },
     {
         path: '/category',
@@ -24,9 +27,7 @@ const routes = [
     {
         path: '/message-board',
         name: 'messageBoard',
-        components: {
-            'Home': CommonHello,
-        },
+        component: MessageBoard,
     },
     {
         path: '/about-me',
@@ -36,8 +37,13 @@ const routes = [
     {
         path: '/login',
         name: 'login',
-        components: {},
-    }
+        component: Login,
+    },
+    {
+        path: '/article/:id',
+        name: 'article',
+        component: Article,
+    },
 ];
 
 const router = createRouter({

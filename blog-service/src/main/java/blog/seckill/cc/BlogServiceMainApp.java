@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * version: 1.0 <br>
  */
 @SpringBootApplication
-@SuppressWarnings("resource")
 public class BlogServiceMainApp {
     public static void main(String[] args) {
         System.setProperty("jasypt.encryptor.password", System.getenv("JASYPT_PASS"));
