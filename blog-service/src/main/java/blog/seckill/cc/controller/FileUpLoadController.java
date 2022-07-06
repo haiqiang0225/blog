@@ -32,7 +32,7 @@ public class FileUpLoadController {
 //            fileName = "file";
 //        }
         log.info("图片上传成功");
-        uploadUtil.doUploadAliOSS();
+        uploadUtil.doUploadAliOSS(file);
 
         return fileName;
     }

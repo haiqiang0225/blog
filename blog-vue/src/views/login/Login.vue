@@ -78,20 +78,32 @@
         </el-input>
 
         <!--    手机号    -->
-        <el-input class="login-input"
-                  placeholder="请输入手机号"
-                  v-model="phone"
-                  maxlength="11"
-                  clearable
-                  @input="phoneMustBeNumber"
+        <div class="phone-wrap">
+          <el-input class="login-input"
+                    placeholder="请输入手机号"
+                    v-model="phone"
+                    maxlength="11"
+                    clearable
+                    @input="phoneMustBeNumber"
 
-        >
-          <template #prepend>
-            <font-awesome-icon icon="fa-solid fa-mobile-screen-button"/>
-          </template>
-        </el-input>
+          >
+            <template #prepend>
+              <font-awesome-icon icon="fa-solid fa-mobile-screen-button"/>
+            </template>
+          </el-input>
 
-        <el-button type="info" class="login-btn" @click="">登陆/注册</el-button>
+          <el-input class="login-input"
+                    placeholder="请输入验证码"
+                    v-model="verifyCode"
+                    maxlength="6"
+          >
+            <template #append>
+              <el-button type="info" @click="sendVerifyCode">发送验证码</el-button>
+            </template>
+          </el-input>
+        </div>
+
+        <el-button type="info" class="login-btn" @click="doLogin">登陆/注册</el-button>
       </form>
     </div>
   </div>
@@ -101,13 +113,11 @@
 import {inject, ref} from "vue"
 import CommonHello from "@/views/banner/CommonBanner";
 import {ElMessage} from "element-plus";
-import request from "@/utils/request";
 import axios from "@/utils/axios";
-
 
 export default {
   name: "Login",
-  components: {CommonHello},
+  components: {CommonHello,},
   setup() {
     // 头像
     const avatarURL = ref('');
@@ -121,7 +131,9 @@ export default {
     const emailSelect = ref('@qq.com');
     const email = ref('');
     const phone = ref('');
-    return {avatarURL, username, nickname, password, emailSelect, email, phone};
+
+    const verifyCode = ref('');
+    return {avatarURL, username, nickname, password, emailSelect, email, phone, verifyCode};
   },
   methods: {
     phoneMustBeNumber() {
@@ -151,7 +163,7 @@ export default {
         type: 'error'
       });
     },
-    async upLoad(data) {
+    upLoad(data) {
       console.log("upLoad: ", data.file);
       const formData = new FormData();
       formData.append('file', data.file)
@@ -162,11 +174,20 @@ export default {
           .catch(error => {
             console.log(error)
           });
-      if (res) {
+      if (res.code === 200) {
         this.handleAvatarSuccess(res, data.file);
       } else {
         this.handleAvatarFail(res);
       }
+    },
+    sendVerifyCode() {
+      ElMessage.error('暂未支持');
+    },
+    doLogin() {
+
+    },
+    test() {
+      alert(1);
     }
 
   }
@@ -188,7 +209,7 @@ export default {
   min-height: 400px;
   min-width: 600px;
   overflow-y: auto;
-  top: 10%;
+  top: 13vh;
 }
 
 
@@ -223,5 +244,9 @@ export default {
   left: 0;
   right: 0;
   margin: 5px auto;
+}
+
+.phone-wrap {
+  display: flex;
 }
 </style>

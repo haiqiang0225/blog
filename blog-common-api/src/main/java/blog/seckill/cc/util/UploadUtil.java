@@ -1,5 +1,8 @@
 package blog.seckill.cc.util;
 
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.model.UploadUdfImageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -7,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.InputStream;
 import java.util.UUID;
 
 /**
@@ -37,16 +41,29 @@ public class UploadUtil {
 
     private final String ossAccessKeySecret;
 
+    private final String ossEndPoint;
+
+    private final String ossBucketName;
+
+    private final String ossFileSaveBaseFolder;
+
 
 //    public UploadUtil() {
 //        this.ossAccessKeyID = "";
 //        this.ossAccessKeySecret = "";
 //    }
 
+
     public UploadUtil(@Value("${oss.access.key.id}") String ossAccessKeyID,
-                      @Value("${oss.access.key.secret}") String ossAccessKeySecret) {
+                      @Value("${oss.access.key.secret}") String ossAccessKeySecret,
+                      @Value("${oss.file.endpoint}") String ossEndPoint,
+                      @Value("${oss.file.bucketName}") String ossBucketName,
+                      @Value("${oss.file.folder}") String ossFileSaveBaseFolder) {
         this.ossAccessKeyID = ossAccessKeyID;
         this.ossAccessKeySecret = ossAccessKeySecret;
+        this.ossEndPoint = ossEndPoint;
+        this.ossBucketName = ossBucketName;
+        this.ossFileSaveBaseFolder = ossFileSaveBaseFolder;
     }
 
     /**
@@ -96,9 +113,27 @@ public class UploadUtil {
         }
     }
 
-    public boolean doUploadAliOSS() {
-        log.info("上传到阿里云oss, ID: {}, SECRET: {}", ossAccessKeyID, ossAccessKeySecret);
+    public boolean doUploadAliOSS(MultipartFile file) {
+        doUploadAliOSS(file, ossAccessKeyID, ossAccessKeySecret, "jpg");
         return false;
+    }
+
+    public String doUploadAliOSS(MultipartFile file, String accessKeyId, String accessKeySecret, String imageType) {
+        try {
+            log.info("oss: {} {} {} {} {} ", ossAccessKeyID, ossAccessKeySecret, ossEndPoint, ossBucketName, ossFileSaveBaseFolder);
+            OSS ossClient = new OSSClientBuilder().build(ossEndPoint, accessKeyId, accessKeySecret);
+            InputStream inputStream = file.getInputStream();
+            String originalFileName = file.getOriginalFilename();
+            originalFileName = ossFileSaveBaseFolder + "/" + originalFileName;
+            ossClient.putObject(ossBucketName, originalFileName, inputStream);
+            ossClient.shutdown();
+
+            return "";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public String getUploadFile() {
