@@ -148,9 +148,7 @@ export default {
       }
     },
     handleAvatarSuccess(res, file) {
-      // 修改头像
-      // this.avatarURL = URL.createObjectURL(file.raw);
-      // console.log('success: ', res, file);
+      // 修改头像显示内存中的头像
       this.avatarURL = URL.createObjectURL(file);
       ElMessage({
         message: '上传头像成功',
@@ -164,21 +162,18 @@ export default {
       });
     },
     upLoad(data) {
-      console.log("upLoad: ", data.file);
+      // 上传头像
       const formData = new FormData();
       formData.append('file', data.file)
       const res = axios.post('http://localhost:8080/proxy/upload', formData)
           .then(response => {
-            console.log(response)
+            // 成功回调
+            this.handleAvatarSuccess(res, data.file);
           })
           .catch(error => {
-            console.log(error)
+            // 失败回调
+            this.handleAvatarFail(res);
           });
-      if (res.code === 200) {
-        this.handleAvatarSuccess(res, data.file);
-      } else {
-        this.handleAvatarFail(res);
-      }
     },
     sendVerifyCode() {
       ElMessage.error('暂未支持');

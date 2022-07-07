@@ -16,6 +16,37 @@
           <p v-html="item"></p>
         </li>
       </ul>
+      <div class="ref-items">
+
+        <!--   github -->
+        <el-button
+            circle
+            class="ref-item"
+            type="info"
+        >
+          <font-awesome-icon icon="fa-brands fa-github"/>
+        </el-button>
+
+        <!--    weixin    -->
+        <el-button
+            circle
+            class="ref-item"
+            type="success"
+        >
+          <font-awesome-icon icon="fa-brands fa-weixin"/>
+        </el-button>
+
+        <!--    qq    -->
+        <el-button
+            circle
+            class="ref-item"
+            type="primary"
+        >
+          <font-awesome-icon icon="fa-brands fa-qq"/>
+        </el-button>
+
+
+      </div>
     </div>
   </div>
 </template>
@@ -81,5 +112,18 @@ export default {
   position: relative;
   margin: 24px 0;
   left: 10%;
+}
+
+.ref-items {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.ref-item {
+  position: relative;
+  font-size: 1.5rem;
+  width: auto;
+  height: auto;
 }
 </style>

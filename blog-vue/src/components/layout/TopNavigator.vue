@@ -65,14 +65,52 @@
             </router-link>
             <span>|</span>
           </div>
-          <div class="menus-item">
-            <router-link to="/">
-              <font-awesome-icon icon="fa-code-fork"/>
-              个人项目
-              <font-awesome-icon icon="fa-chevron-down"/>
-            </router-link>
-            <span>|</span>
+
+          <div class="menus-item sub-menus">
+            <div class="sub-menus-title-wrap">
+              <a class="sub-menus-href">
+                <font-awesome-icon icon="fa-code-fork"/>
+                个人项目
+                <font-awesome-icon icon="fa-chevron-down"/>
+              </a>
+              <span>|</span>
+
+
+            </div>
+            <div class="sub-menu-item-wrap">
+              <a
+                  href="https://github.com/haiqiang0225/blog"
+                  class="sub-menu-item"
+                  target="_blank"
+              >
+                <div style="" class="text-middle-wrap">
+                  <span>博客</span>
+                </div>
+
+              </a>
+
+              <a
+                  href="https://github.com/haiqiang0225/seckill"
+                  class="sub-menu-item"
+                  target="_blank"
+              >
+                <div style="" class="text-middle-wrap">
+                  <span>微服务秒杀</span>
+                </div>
+              </a>
+
+              <a
+                  href="https://github.com/haiqiang0225/K"
+                  class="sub-menu-item"
+                  target="_blank"
+              >
+                <div style="" class="text-middle-wrap">
+                  <span>操作系统内核</span>
+                </div>
+              </a>
+            </div>
           </div>
+
           <div class="menus-item">
             <router-link :to="{name: 'login'}">
               <font-awesome-icon icon="fa-user-circle"/>
@@ -163,6 +201,7 @@ ul {
 
 
 .nav-container {
+  background: none;
   position: relative;
   font-size: 14px;
   width: 100%;
@@ -236,6 +275,87 @@ ul {
   background-color: #80c8f8;
   content: "";
   transition: all 0.3s ease-in-out;
+}
+
+/* 带下浮框的按钮 */
+.sub-menus {
+  height: 100% !important;
+  align-self: center;
+}
+
+.sub-menus-title-wrap {
+  display: flex;
+  justify-content: center;
+  cursor: default;
+}
+
+.sub-menus-href {
+  height: 22px !important;
+}
+
+.sub-menus-href ~ span {
+  height: 22px !important;
+  align-self: center;
+}
+
+/* 浮出框样式 */
+.menus-item:hover .sub-menu-item-wrap {
+  background-color: white;
+  display: flex;
+}
+
+.sub-menu-item-wrap {
+  position: absolute;
+  background-color: white;
+  top: 50px;
+  border-radius: 10px;
+  left: -35%;
+  width: auto;
+  display: none;
+  flex-direction: column;
+  padding: 10px 0;
+}
+
+.sub-menu-item {
+  width: 160px;
+  min-width: 160px;
+  max-width: 160px;
+  height: 30px;
+  color: #464646;
+  line-height: 100% !important;
+  margin-top: 1px;
+  /*background-color: white;*/
+  display: block !important;
+}
+
+.sub-menu-item:hover {
+  background-color: rgb(75, 81, 89);
+}
+
+.sub-menu-item:hover span {
+  color: white;
+}
+
+.sub-menu-item-wrap > a {
+  height: 30px;
+  min-height: 30px;
+  display: flex;
+  line-height: 30px;
+  font-size: 1rem;
+  color: inherit;
+  text-align: center;
+}
+
+.sub-menu-item span {
+  align-self: center;
+  color: #464646;
+}
+
+.text-middle-wrap {
+  display: block;
+  height: 100%;
+  text-align: center;
+  line-height: 30px;
 }
 
 /* 搜索框样式 */

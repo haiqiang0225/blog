@@ -35,8 +35,10 @@ import {
     faLock,
     faEnvelope,
     faMobileScreenButton,
-    faPlus
+    faPlus,
 } from '@fortawesome/free-solid-svg-icons';
+
+import {faGithub, faQq, faWeixin} from "@fortawesome/free-brands-svg-icons";
 
 
 import "@/assets/css/reset.css";
@@ -49,7 +51,8 @@ library.add(faHome, faSearch, faTags, faTag, faThLarge, faUserCircle,
     faAt, faAddressCard, faCodeFork, faChevronDown, faMapPin,
     faArrowUp, faCalendarDay, faBarChart, faMagnifyingGlass,
     faFileCircleXmark, faSpinner, faClockRotateLeft, faClock,
-    faUser, faLock, faEnvelope, faMobileScreenButton, faPlus);
+    faUser, faLock, faEnvelope, faMobileScreenButton, faPlus,
+    faGithub, faQq, faWeixin);
 
 
 const app = createApp(App);

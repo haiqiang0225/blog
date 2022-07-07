@@ -2,7 +2,6 @@ package blog.seckill.cc.util;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.model.UploadUdfImageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -113,26 +112,51 @@ public class UploadUtil {
         }
     }
 
-    public boolean doUploadAliOSS(MultipartFile file) {
-        doUploadAliOSS(file, ossAccessKeyID, ossAccessKeySecret, "jpg");
-        return false;
+    /**
+     * description: doUploadAliOSS <br>
+     * version: 1.0 <br>
+     * date: 2022/7/7 13:39 <br>
+     * author: objcat <br>
+     *
+     * @param file 文件对象
+     * @return String
+     */
+    public String doUploadAliOSS(MultipartFile file) {
+        return doUploadAliOSS(file, ossAccessKeyID, ossAccessKeySecret, null);
     }
 
-    public String doUploadAliOSS(MultipartFile file, String accessKeyId, String accessKeySecret, String imageType) {
+    /**
+     * description: doUploadAliOSS <br>
+     * version: 1.0 <br>
+     * date: 2022/7/7 13:37 <br>
+     * author: objcat <br>
+     *
+     * @param file            文件对象
+     * @param accessKeyId     阿里云accessKeyId
+     * @param accessKeySecret 阿里云accessKeySecret
+     * @param pathOverride    重写存储路径
+     * @return java.lang.String
+     */
+    public String doUploadAliOSS(MultipartFile file, String accessKeyId, String accessKeySecret, String pathOverride) {
+        OSS ossClient = new OSSClientBuilder().build(ossEndPoint, accessKeyId, accessKeySecret);
         try {
-            log.info("oss: {} {} {} {} {} ", ossAccessKeyID, ossAccessKeySecret, ossEndPoint, ossBucketName, ossFileSaveBaseFolder);
-            OSS ossClient = new OSSClientBuilder().build(ossEndPoint, accessKeyId, accessKeySecret);
             InputStream inputStream = file.getInputStream();
-            String originalFileName = file.getOriginalFilename();
-            originalFileName = ossFileSaveBaseFolder + "/" + originalFileName;
+            String originalFileName;
+            if (pathOverride == null) {
+                originalFileName = ossFileSaveBaseFolder + "/" + file.getOriginalFilename();
+            } else {
+                originalFileName = pathOverride;
+            }
             ossClient.putObject(ossBucketName, originalFileName, inputStream);
-            ossClient.shutdown();
-
-            return "";
+            return originalFileName;
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            if (ossClient != null) {
+                ossClient.shutdown();
+            }
         }
     }
 

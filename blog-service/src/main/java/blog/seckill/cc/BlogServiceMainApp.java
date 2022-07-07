@@ -1,5 +1,6 @@
 package blog.seckill.cc;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * version: 1.0 <br>
  */
 @SpringBootApplication
+@MapperScan("blog.seckill.cc.mapper")
 public class BlogServiceMainApp {
     public static void main(String[] args) {
         System.setProperty("jasypt.encryptor.password", System.getenv("JASYPT_PASS"));
