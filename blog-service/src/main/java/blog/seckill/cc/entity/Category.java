@@ -1,5 +1,6 @@
 package blog.seckill.cc.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ import lombok.ToString;
 public class Category {
 
     // 分类的id
-    @TableId
+    @TableId(type = IdType.AUTO)
     public Long categoryId;
 
     // 分类名

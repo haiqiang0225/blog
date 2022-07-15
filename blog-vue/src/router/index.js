@@ -43,6 +43,10 @@ const routes = [
         path: '/article/:id',
         name: 'article',
         component: Article,
+        // props: {
+        //     id: true,
+        //     article: true
+        // }
     },
 ];
 
@@ -50,8 +54,15 @@ const router = createRouter({
     history: createWebHistory(),
     routes,
     scrollBehavior(to, from, savedPosition) {
-        // 页面刷新时保存滚动条位置, 切换路由时恢复位置
-        return savedPosition ? savedPosition : {top: 0};
+        if (to.hash) {
+            return {
+                el: to.hash,
+                behavior: 'smooth',
+            };
+        } else {
+            // 页面刷新时保存滚动条位置, 切换路由时恢复位置
+            return savedPosition ? savedPosition : {top: 0};
+        }
     }
 });
 

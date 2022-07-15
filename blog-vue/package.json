@@ -21,6 +21,7 @@
     "core-js": "^3.8.3",
     "element-plus": "^2.2.6",
     "highlight.js": "^11.5.1",
+    "js-cookie": "^3.0.1",
     "marked": "^4.0.17",
     "md-editor-v3": "^2.2.0",
     "vue": "^3.2.13",

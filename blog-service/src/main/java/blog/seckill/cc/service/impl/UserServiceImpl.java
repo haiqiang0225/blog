@@ -1,6 +1,7 @@
 package blog.seckill.cc.service.impl;
 
 import blog.seckill.cc.mapper.UserMapper;
+import blog.seckill.cc.service.UserService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -12,7 +13,7 @@ import javax.annotation.Resource;
  * version: 1.0 <br>
  */
 @Service
-public class UserServiceImpl {
+public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
 

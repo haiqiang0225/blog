@@ -1,4 +1,4 @@
-package blog.secikll.cc;
+package blog.seckill.cc.test;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.context.SpringBootTest;

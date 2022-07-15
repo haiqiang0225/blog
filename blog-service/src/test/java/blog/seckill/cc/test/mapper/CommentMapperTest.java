@@ -1,6 +1,6 @@
-package blog.secikll.cc.mapper;
+package blog.seckill.cc.test.mapper;
 
-import blog.secikll.cc.TestBase;
+import blog.seckill.cc.test.TestBase;
 import blog.seckill.cc.BlogServiceMainApp;
 import blog.seckill.cc.entity.Comment;
 import blog.seckill.cc.mapper.CommentMapper;

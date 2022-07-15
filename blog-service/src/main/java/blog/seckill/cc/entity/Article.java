@@ -1,13 +1,13 @@
 package blog.seckill.cc.entity;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * description: Article <br>
@@ -22,7 +22,7 @@ import java.util.Date;
 @ToString
 public class Article {
     // 文章的id
-    @TableId
+    @TableId(type = IdType.AUTO)
     Long articleId;
 
     // 发表文章的用户的id
@@ -50,9 +50,21 @@ public class Article {
     Long likeCount;
 
     // 是否置顶
+    @OrderBy
     Boolean topFlag;
 
     // 文章内容id
     Long articleDetailId;
+
+    // 文章配图
+    String articleImageUrl;
+
+    // 该文章的分类, 不在数据库中存在
+    @TableField(exist = false)
+    Category category;
+
+    // 该文章的标签
+    @TableField(exist = false)
+    List<Tag> tags;
 
 }

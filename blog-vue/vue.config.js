@@ -12,9 +12,19 @@ module.exports = defineConfig({
     devServer: {
         proxy: {
             '/proxy': {
-                target: process.env.VUE_APP_AXIOS_BASEURL,
+                target: process.env.VUE_APP_BACKEND_TARGET_BASEURL,
                 changeOrigin: true,
-                pathRewrite: {'^/proxy': ''}
+                pathRewrite: {'^/proxy': ''},
+            },
+            'backend': {
+                target: process.env.VUE_APP_BACKEND_TARGET_BASEURL,
+                changeOrigin: true,
+                pathRewrite: {'^/backend': ''},
+            },
+            'api': {
+                target: process.env.VUE_APP_BACKEND_TARGET_BASEURL,
+                changeOrigin: true,
+                pathRewrite: {'^/api': ''},
             }
         }
     },

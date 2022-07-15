@@ -1,13 +1,11 @@
-package blog.secikll.cc.mapper;
+package blog.seckill.cc.test.mapper;
 
-import blog.secikll.cc.TestBase;
+import blog.seckill.cc.test.TestBase;
 import blog.seckill.cc.BlogServiceMainApp;
 import blog.seckill.cc.entity.User;
 import blog.seckill.cc.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 

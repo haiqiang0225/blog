@@ -36,7 +36,7 @@
             <router-link :to="{
               name: 'tag'
               }">
-              <font-awesome-icon icon="fa-tags"/>
+              <font-awesome-icon icon="fa-tag"/>
               标签
             </router-link>
           </div>

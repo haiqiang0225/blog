@@ -1,6 +1,6 @@
-package blog.secikll.cc.mapper;
+package blog.seckill.cc.test.mapper;
 
-import blog.secikll.cc.TestBase;
+import blog.seckill.cc.test.TestBase;
 import blog.seckill.cc.BlogServiceMainApp;
 import blog.seckill.cc.entity.Category;
 import blog.seckill.cc.mapper.CategoryMapper;
@@ -26,5 +26,22 @@ public class CategoryMapperTest extends TestBase {
         Category category = categoryMapper.selectById(0);
         assert category != null;
         System.out.println(">>>>>>>>>>>>> " + category);
+    }
+
+//    @Test
+//    public void genCategoryForTest() {
+//        Category category = new Category();
+//        for (int i = 0; i < 5; i++) {
+//            category.setCategoryId((long)(i + 1));
+//            category.setName("Test");
+//            categoryMapper.insert(category);
+//        }
+//    }
+
+    @Test
+    public void testSelectByArticleId() {
+        Category category = categoryMapper.queryCategoryByArticleId(1L);
+        assert category != null;
+        System.out.println("?>>>>>>>>>>>>" + category);
     }
 }

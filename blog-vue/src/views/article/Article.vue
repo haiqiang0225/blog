@@ -14,19 +14,21 @@
         <!--    发表时间    -->
         <div class="time">
           <font-awesome-icon icon="fa-calendar-day"/>
-          <span>发表于: {{ article.createTime }}</span>
+          <span>发表于: {{ article.createDate }}</span>
         </div>
         <span class="separator">|</span>
         <!--   更新时间   -->
         <div class="time">
           <font-awesome-icon icon="fa-solid fa-clock-rotate-left"/>
-          <span>更新于: {{ article.createTime }}</span>
+          <span>更新于: {{ article.updateDate }}</span>
         </div>
         <span class="separator">|</span>
         <!--   分类   -->
-        <div class="category">
+        <div class="category"
+             v-for="(tag,index) in article.tags"
+             :key="index">
           <font-awesome-icon icon="fa-th-large"/>
-          {{ article.category }}
+          {{ tag.name }}
         </div>
 
         <!--   统计信息     -->
@@ -46,13 +48,13 @@
 
           <!--   阅读量   -->
           <div class="read-count">
-            <span>阅读量: {{ article.readCount }}</span>
+            <span>阅读量: {{ article.viewCount }}</span>
           </div>
           <span class="separator">|</span>
 
           <!--   评论数   -->
           <div class="comment-count">
-            <span>评论数: {{ article.comment.length }}</span>
+            <span>评论数: {{ article.commentCount }}</span>
           </div>
         </div>
       </div>
@@ -60,24 +62,38 @@
 
     </template>
   </CommonBanner>
-  <div class="main-content">
+  <!-- 文章详情 -->
+  <div class="main-content" v-loading="onInit">
     <div class="article-container">
       <!--   内容   -->
       <article class="markdown-body">
-        <h1>h1标签</h1>
-        <h1>h1标签</h1>
-        <h1>h1标签</h1>
-        <h1>h1标签</h1>
-        <h1>h1标签</h1>
-        <h1>h1标签</h1>
-        <h1>h1标签</h1>
-        <h1>h1标签</h1>
-        <h1>h1标签</h1>
-        <h1>h1标签</h1>
-
+        <a href="javascript:" @click="anchor(`bottom`)">aaa</a>
         <p v-html="html"></p>
-
+        <div id="bottom"></div>
       </article>
+    </div>
+  </div>
+
+  <!-- todo:评论区树形展示 -->
+  <!-- 评论区 -->
+  <div class="comment-container">
+    <div class="comment-wrap">
+      <!--   输入框   -->
+      <div class="comment-input">
+
+      </div>
+
+      <!--   评论列表   -->
+      <div class="comment-list">
+        <ul>
+          <li
+              v-for="(comment, index) in comments"
+              :key="index"
+          >
+            {{ comment }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -87,20 +103,85 @@ import {ref, reactive, defineComponent} from "vue"
 import {useRoute} from "vue-router";
 import Editor from "@tinymce/tinymce-vue"
 import CommonBanner from "@/views/banner/CommonBanner";
-import axios from "axios";
+import axios from "@/utils/axios";
 import {marked} from "marked"
 import {useStore} from "vuex";
 import highlightJs from "highlight.js";
 import "github-markdown-css";
 import 'highlight.js/styles/atom-one-dark.css'
+import {ElMessage} from "element-plus";
 
 export default {
   name: "Article",
   components: {Editor, CommonBanner},
   setup(props, context) {
     // 设置 marked
+    const tocObj = {
+      add: function (text, level) {
+        let anchor = `#toc${level}${++this.index}`;
+        this.toc.push({anchor: anchor, level: level, text: text});
+        return anchor;
+      },
+      // 使用堆栈的方式处理嵌套的ul,li，level即ul的嵌套层次，1是最外层
+      // <ul>
+      //   <li></li>
+      //   <ul>
+      //     <li></li>
+      //   </ul>
+      //   <li></li>
+      // </ul>
+      toHTML: function () {
+        let levelStack = [];
+        let result = '';
+        const addStartUL = () => {
+          result += '<ul>';
+        };
+        const addEndUL = () => {
+          result += '</ul>\n';
+        };
+        const addLI = (anchor, text) => {
+          result += '<li><a href="javascript:" onclick="anchor(`' + anchor + '`)">' + text + '<a></li>\n';
+        };
+
+        this.toc.forEach(function (item) {
+          let levelIndex = levelStack.indexOf(item.level);
+          // 没有找到相应level的ul标签，则将li放入新增的ul中
+          if (levelIndex === -1) {
+            levelStack.unshift(item.level);
+            addStartUL();
+            addLI(item.anchor, item.text);
+          } // 找到了相应level的ul标签，并且在栈顶的位置则直接将li放在此ul下
+          else if (levelIndex === 0) {
+            addLI(item.anchor, item.text);
+          } // 找到了相应level的ul标签，但是不在栈顶位置，需要将之前的所有level出栈并且打上闭合标签，最后新增li
+          else {
+            while (levelIndex--) {
+              levelStack.shift();
+              addEndUL();
+            }
+            addLI(item.anchor, item.text);
+          }
+        });
+        // 如果栈中还有level，全部出栈打上闭合标签
+        while (levelStack.length) {
+          levelStack.shift();
+          addEndUL();
+        }
+        // 清理先前数据供下次使用
+        this.toc = [];
+        this.index = 0;
+        return result;
+      },
+      toc: [],
+      index: 0
+    };
+    let renderer = new marked.Renderer();
+    renderer.heading = function (text, level, raw) {
+      let anchor = tocObj.add(text, level);
+      return `<a id=${anchor} class="anchor-fix"></a><h${level}>${text}</h${level}>\n`;
+    };
     marked.setOptions({
-      renderer: new marked.Renderer(),
+      renderer: renderer,
       highlight(code, lang, callback) {
         return highlightJs.highlightAuto(code).value;
       },
@@ -124,82 +205,85 @@ export default {
     // 确保切换过来后,滚动条的位置初始化
     globalScrollBar.scrollTo(0, 0);
 
-    //todo: 根据id 向后端请求文章信息
-    const article = {
-      id: 0,
-      isTop: true,
-      title: '标题',
-      backgroundImageURL: "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-      createTime: new Date().toLocaleDateString(),
-      category: 'Test',
-      readCount: 0,
-      tags: ['123', '456'],
-      content: "这少年便是闰土。我认识他时，" +
-          "也不过十多岁，离现在将有三十年了；" +
-          "那时我的父亲还在世，家景也好，我正是一个少" +
-          "爷。那一年，我家是一件大祭祀的值年。这祭祀，说是" +
-          "三十多年才能轮到一回，所以很郑重。正（zhēng）月里供像，" +
-          "供品很多，祭器很讲究，拜的人也很多，祭器也很要防偷去。我家" +
-          "只有一个忙月（我们这里给人做工的分三种：整年给一定人家做工" +
-          "的叫长工；按日给人做工的叫短工；自己也种地，只在过年过节以" +
-          "及收租时候来给一定的人家做工的称忙月），忙不过来，他便对父" +
-          "亲说，可以叫他的儿子闰土来管祭器的。",
-      comment: [{}, {}]
-    };
+    // 控制相关
+    const onInit = ref(true);
 
-    let md = "#   Vue2笔记\n" +
-        "\n" +
-        "## 脚手架文件结构\n" +
-        "\n" +
-        "\t├── node_modules \n" +
-        "\t├── public\n" +
-        "\t│   ├── favicon.ico: 页签图标\n" +
-        "\t│   └── index.html: 主页面\n" +
-        "\t├── src\n" +
-        "\t│   ├── assets: 存放静态资源\n" +
-        "\t│   │   └── logo.png\n" +
-        "\t│   │── component: 存放组件\n" +
-        "\t│   │   └── HelloWorld.vue\n" +
-        "\t│   │── App.vue: 汇总所有组件\n" +
-        "\t│   │── main.js: 入口文件\n" +
-        "\t├── .gitignore: git版本管制忽略的配置\n" +
-        "\t├── babel.config.js: babel的配置文件\n" +
-        "\t├── package.json: 应用包配置文件 \n" +
-        "\t├── README.md: 应用描述文件\n" +
-        "\t├── package-lock.json：包版本控制文件\n";
+    // 显示相关
+    const articleDetail = ref({});
+    const article = ref({});
+    const comments = ref({});
 
-    md += "```java\n" +
-        "public class Lamborghini implements Car{\n" +
-        "    @Override\n" +
-        "    public void name() {\n" +
-        "        System.out.println(\"兰博基尼\");\n" +
-        "    }\n" +
-        "}\n" +
-        "public class Porsche implements Car{\n" +
-        "    @Override\n" +
-        "    public void name() {\n" +
-        "        System.out.println(\"保时捷\");\n" +
-        "    }\n" +
-        "}\n" +
-        "```";
 
-    const wordCount = 0;
-    const timeUsed = '0分钟';
-    const html = marked(md);
-    return {backgroundImg, article, wordCount, timeUsed, html};
+    let load = async function () {
+      article.value = await JSON.parse(localStorage.getItem("articleCache"));
+      // 本地缓存中不存在
+      let url = "/api/article/getDetails?articleId=" + article_id;
+      if (!article.value || article.value.articleId !== article_id) {
+        url = url + "&queryArticle=true";
+      }
+      let promise = await axios.get(url);
+      onInit.value = false;
+      return promise;
+    }
+
+    let calWordCount = function (data) {
+      let pattern = /[a-zA-Z0-9_\u0392-\u03c9]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+/g;
+      let m = data.match(pattern);
+      let count = 0;
+      if (m == null) {
+        return count;
+      }
+      for (let i = 0; i < m.length; i++) {
+        if (m[i].charCodeAt(0) >= 0x4E00) {
+          count += m[i].length;
+        } else {
+          count += 1;
+        }
+      }
+      return count;
+    }
+
+    // 页面显示
+    const timeUsed = ref("");
+    let wordCount = ref(0);
+    let html = ref('');
+    let promise = load();
+    promise.then(response => {
+      // 本地缓存中不存在
+      if (!article.value || article.value.articleId !== article_id) {
+        article.value = response.data.article;
+      }
+      articleDetail.value = response.data.articleDetail;
+      comments.value = response.data.comments;
+      console.log(article.value);
+      console.log(articleDetail.value);
+
+      // 进行解析
+      if ("md" === articleDetail.value.contentType) {
+        html.value = marked(articleDetail.value.content);
+        html.value = tocObj.toHTML() + html.value;
+      } else {
+        html.value = articleDetail.value.content;
+      }
+
+      wordCount.value = calWordCount(html.value);
+      timeUsed.value = `${Math.ceil(wordCount.value / 300)} 分钟`;
+    }).catch(error => {
+      ElMessage.error("出错了,请刷新试试");
+    });
+
+
+    return {backgroundImg, article, wordCount, timeUsed, html, onInit, comments};
   },
   methods: {
-    getArticle() {
-      let params = new FormData();
-      axios.get('http://localhost:8080/proxy/test/get').then(
-          response => {
-            console.log(response.data);
-          },
-          error => {
-            console.log(error.message);
-          }
-      );
+    anchor(id) {
+      let globalScrollBar = this.$store.state.globalScrollBar;
+      let elementById = document.getElementById(id);
+      globalScrollBar.scrollTo(0, elementById.offsetTop + document.documentElement.clientHeight * .36);
     }
+  },
+  mounted() {
+    window.anchor = this.anchor;
   }
 }
 </script>
@@ -264,6 +348,7 @@ export default {
   display: inline-block;
 }
 
+/* markdown 样式*/
 .markdown-body {
   box-sizing: border-box;
   min-width: 200px;
@@ -272,6 +357,34 @@ export default {
   padding: 45px;
   border-radius: inherit;
   height: 100%;
+}
+
+/* 评论区样式 */
+.comment-container {
+  position: relative;
+  top: 46px;
+  margin-bottom: 20px;
+}
+
+.comment-wrap {
+  box-sizing: border-box;
+  width: 960px;
+  position: relative;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  max-width: 1300px;
+  min-width: 960px;
+  background-color: white;
+  border-radius: 16px;
+  padding: 45px;
+}
+
+.comment-input {
+
+}
+
+.comment-list {
 }
 
 </style>

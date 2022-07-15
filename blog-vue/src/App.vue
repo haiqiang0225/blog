@@ -130,7 +130,7 @@ body {
 
 /* 主容器样式 */
 .main-content {
-  width: 900px;
+  width: 960px;
   display: flex;
   padding: 0;
 

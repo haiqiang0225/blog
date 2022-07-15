@@ -1,13 +1,10 @@
 <template>
-  <!-- 封面 -->
-  <HomeBanner></HomeBanner>
   <!-- 文章内容 -->
   <div class="main-content">
     <!--  无限加载  -->
     <ul v-infinite-scroll="load"
         class="article-list"
         :infinite-scroll-disabled="disabledInfiniteLoading"
-        v-loading="onInit"
     >
       <!--   文章卡片   -->
       <li class="article-list-item-card content-glass"
@@ -15,9 +12,9 @@
           :key="index">
 
         <!-- 文章配图 -->
-        <a
-            @click="toArticleDetail(article)"
-            style="height: 100%; cursor: pointer;"
+        <router-link
+            :to="`/article/` + article.articleId"
+            style="height: 100%"
         >
           <el-image
               class="article-image"
@@ -34,7 +31,7 @@
               </div>
             </template>
           </el-image>
-        </a>
+        </router-link>
 
 
         <!--    文章信息    -->
@@ -83,7 +80,7 @@
         </div>
       </li>
 
-      <li class="loading-text" v-show="loading && !onInit">
+      <li class="loading-text" v-show="loading">
 
         <font-awesome-icon class="loading" style="position: relative; top: 10px; right: 10px"
                            icon="fa-solid fa-spinner"/>
@@ -98,7 +95,7 @@
     <div class="main-right-content" style="position: sticky; top: 50px;">
 
       <!--  随便看看    -->
-      <div class="look-random content-glass" v-loading="onInit">
+      <div class="look-random content-glass">
         <div class="mac-top-button-right">
           <span>
             <font-awesome-icon icon="fa-magnifying-glass"/>
@@ -108,8 +105,8 @@
 
         <!--    随便看看item    -->
         <div class="look-random-item"
-             v-for="(item, index) in lookRandoms"
-             :key="index"
+             v-for="item in lookRandoms"
+             :key="item.id"
         >
           <router-link
               :to="`/article/` + item.id"
@@ -119,7 +116,7 @@
             <div class="look-random-image-wrap">
               <el-image
                   class="look-random-image"
-                  :src="item.articleImageUrl"
+                  :src="item.backgroundImageURL"
                   :fit="`fill`"
                   lazy
               >
@@ -143,7 +140,7 @@
       </div>
 
       <!--   标签列表   -->
-      <div class="tag-list content-glass" v-loading="onInit">
+      <div class="tag-list content-glass">
         <div class="mac-top-button-right" style="margin-bottom: 24px;">
           <span>
             <font-awesome-icon icon="fa-tag"/>
@@ -152,37 +149,35 @@
         </div>
 
         <!--  标签item  -->
-        <div
+        <router-link
+            to="#"
+            class="tag-item"
+
+            :style="{color: colorList[(index + randomSeed) % colorList.length]}"
+
             v-for="(item, index) in tag"
             :key="index"
         >
-          <router-link
-              to="#"
-              class="tag-item"
-              :style="{color: colorList[(index + randomSeed) % colorList.length]}"
-          >
 
-            {{ item.name }}
+          {{ item.title }}
 
-          </router-link>
-        </div>
+        </router-link>
+
       </div>
 
       <!--   网站统计信息   -->
-      <div class="web-info content-glass" v-loading="onInit">
+      <div class="web-info content-glass">
         <div class="mac-top-button-right">
           <font-awesome-icon icon="fa-bar-chart"/>
           <span> &nbsp;&nbsp;网站统计信息</span>
         </div>
 
-        <div style="margin-top: 30px;line-height: 15px;">
-          运行时间: <span style="float: right; font-size: 14px;">
-                      {{ webRunTime }}
-                   </span>
+        <div style="padding:4px 0 0; margin-top: 30px;">
+          运行时间: <span style="float: right">{{ webRunTime }}</span>
         </div>
 
         <div style="padding:4px 0 0; margin-top: 20px;">
-          总访问量: <span style="float: right">{{ totalVisitCount }}</span>
+          总访问量: <span style="float: right">{{ webTotalViewCount }}</span>
         </div>
       </div>
     </div>
@@ -191,73 +186,60 @@
 
 <script>
 
-import {onUnmounted, onMounted, ref} from "vue";
+import {ref} from "vue";
 import {ElMessage} from "element-plus"
-import HomeBanner from "@/views/banner/HomeBanner";
 import axios from "@/utils/axios";
-import JsCookie from "js-cookie";
-import router from "@/router";
 
 export default {
-  name: "Home",
-  components: {HomeBanner},
-  setup() {
+  name: "ArticleList",
+  components: {},
+  props: {
 
-    // 网站统计信息
-    const webStartTime = new Date('2022/7/14 00:00:00');
-    const now = new Date();
-    let dateDiff = Math.abs(now - webStartTime);
-    const webRunTime = ref('');
-    // 总访问数
-    const totalVisitCount = ref(0);
+  },
+  setup(props) {
+
+    //TODO: 需要从服务器请求的数据
+    const webRunTime = '0 天 0 时 0 分 0 秒';
+    const webTotalViewCount = 0;
+    const lookRandoms = [{
+      id: 0,
+      title: '这少年便是闰土。我认识他时，也不过十多岁，',
+      backgroundImageURL: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpe'
+    }, {
+      id: 1,
+      title: '1',
+      backgroundImageURL: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+    },
+      {
+        id: 2,
+        title: '1',
+        backgroundImageURL: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg'
+      }];
 
 
-    // 展示信息
-    const lookRandoms = ref([]);
     const articleList = ref([]);
-    let totalCount = ref(0);
-    const tags = ref([]);
 
-    // 页面状态控制
-    const onInit = ref(true);
+    let totalCount = ref(0);
+
+
+    const tag = [{id: 0, title: 'Java'}, {id: 1, title: 'MySQL'}, {id: 2, title: 'Vue'}];
+
+
     const loading = ref(false);
     const disabledInfiniteLoading = ref(false);
 
     // 初次加载从后端请求, 这里包装一层,进行同步
     let onFirstLoading = async function () {
       loading.value = true;
-      let articleListVersion = localStorage.getItem("articleListVersion") || "";
-      let r = await axios.get("/api/index/get?start=0&count=10&version=" + articleListVersion);
+      let r = await axios.get("/api/article/get?start=0&count=5");
       loading.value = false;
-      onInit.value = false;
       return r;
     }
     let res = onFirstLoading();
     res.then(response => {
-      if (response.data.articleListVersion === localStorage.getItem("articleListVersion")) {
-        articleList.value = JSON.parse(localStorage.getItem("articleList"));
-        totalCount.value = JSON.parse(localStorage.getItem("totalCount"));
-        lookRandoms.value = JSON.parse(localStorage.getItem("lookRandoms"));
-        tags.value = JSON.parse(localStorage.getItem("tags"));
-        totalVisitCount.value = JSON.parse(localStorage.getItem("totalVisitCount"));
-        return;
-      }
       articleList.value = response.data.data;
+      console.log(articleList.value);
       totalCount.value = response.data.count;
-      lookRandoms.value = response.data.lookRandoms;
-      tags.value = response.data.tags;
-      totalVisitCount.value = response.data.totalVisitCount;
-
-      // 存储到本地
-      localStorage.setItem("articleListVersion", response.data.articleListVersion);
-      localStorage.setItem("articleList", JSON.stringify(articleList.value));
-      localStorage.setItem("totalCount", JSON.stringify(totalCount.value));
-      localStorage.setItem("lookRandoms", JSON.stringify(lookRandoms.value));
-      localStorage.setItem("tags", JSON.stringify(tags.value));
-      localStorage.setItem("totalVisitCount", JSON.stringify(totalVisitCount.value));
-      if (!JsCookie.get("visited")) {
-        JsCookie.set("visited", true, {expires: 0.5});
-      }
     }).catch(error => {
       loading.value = false;
     })
@@ -266,7 +248,7 @@ export default {
     // 从后端请求
     const load = () => {
       // 正在加载文章中则不允许调用该方法,避免出错以及优化性能
-      if (loading.value || onInit.value) {
+      if (loading.value) {
         return;
       }
       // 如果没有更多了
@@ -316,50 +298,18 @@ export default {
       colorList.push(randomColor(colorList));
     }
 
-    let timeInterval = null;
-
-
-    // 将毫秒转成时间格式
-    let msToFormatDate = function (ms) {
-      if (ms) {
-        let day = Math.floor(ms / (24 * 60 * 60 * 1000));
-        let hour = Math.floor((ms / (60 * 60 * 1000) - day * 24));
-        let min = Math.floor(ms / (60 * 1000) - day * 24 * 60 - hour * 60);
-        let sec = Math.floor(ms / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
-
-        return `${day} 天 ${hour} 小时 ${min} 分 ${sec}秒`;
-      } else {
-        return ""
-      }
-    };
-
-    onMounted(() => {
-
-      timeInterval = setInterval(() => {
-        dateDiff += 1000;
-        webRunTime.value = msToFormatDate(dateDiff);
-      }, 1000);
-    });
-
-    onUnmounted(() => {
-      //清除定时器
-      timeInterval != null ? clearInterval(timeInterval) : null;
-    })
-
-
     return {
       articleList,
       webRunTime,
+      webTotalViewCount,
       lookRandoms,
-      tag: tags,
+      tag,
       loading,
       disabledInfiniteLoading,
       colorList,
       randomSeed,
       load,
       totalCount,
-      onInit,
-      totalVisitCount,
     };
 
   },
@@ -370,22 +320,14 @@ export default {
           item.createDate = item.createDate.substring(0, 10);
       });
     }
-  },
-  methods: {
-    toArticleDetail(article) {
-      localStorage.setItem("articleCache", JSON.stringify(article));
-      router.push(`/article/${article.articleId}`);
-    }
   }
 }
 </script>
 
 <style scoped>
-
 .main-content {
   width: auto;
   padding: 10px;
-  min-height: 80vh;
 }
 
 /* 文章容器 */
@@ -528,9 +470,7 @@ export default {
 /* 右侧浮动栏*/
 .main-right-content {
   width: 300px;
-  height: auto;
-  position: sticky;
-  top: 50px;
+  height: 200px;
   border-radius: inherit;
   margin: 15px 10px;
 }
@@ -540,7 +480,6 @@ export default {
   width: auto;
   height: auto;
   min-width: 240px;
-  min-height: 320px;
   margin-top: 10px;
   border-radius: 10px;
   padding: 24px;
@@ -601,7 +540,6 @@ export default {
 .tag-list {
   width: auto;
   height: auto;
-  min-height: 100px;
   border-radius: 10px;
   margin-top: 10px;
   padding: 24px;
@@ -659,6 +597,5 @@ export default {
   -webkit-background-clip: text;
   color: transparent;
 }
-
 
 </style>

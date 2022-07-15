@@ -31,6 +31,12 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
+        <!--    AOP    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!--    Spring Web    -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -46,6 +52,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
+
 
         <!--   SpringDoc     -->
         <dependency>
