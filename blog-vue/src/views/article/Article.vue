@@ -54,7 +54,7 @@
 
           <!--   评论数   -->
           <div class="comment-count">
-            <span>评论数: {{ article.commentCount }}</span>
+            <span>评论数: {{ comments != null ? comments.length : 0 }}</span>
           </div>
         </div>
       </div>
@@ -63,39 +63,162 @@
     </template>
   </CommonBanner>
   <!-- 文章详情 -->
-  <div class="main-content" v-loading="onInit">
-    <div class="article-container">
-      <!--   内容   -->
+  <div class="main-content-container">
+    <div class="main-content" v-loading="onInit">
+      <div class="article-container">
+        <!--   内容   -->
+        <article class="markdown-body">
+          <!--          <p v-html="toc"></p>-->
+          <p v-html="html"></p>
+        </article>
+      </div>
+
+    </div>
+    <!-- 右侧目录导航栏 -->
+    <div class="right-nav-container" v-loading="onInit">
       <article class="markdown-body">
-        <a href="javascript:" @click="anchor(`bottom`)">aaa</a>
-        <p v-html="html"></p>
-        <div id="bottom"></div>
+        <span> 目录 </span>
+        <p v-html="toc"></p>
       </article>
     </div>
   </div>
 
   <!-- todo:评论区树形展示 -->
   <!-- 评论区 -->
-  <div class="comment-container">
-    <div class="comment-wrap">
+  <div class="comment-container"
+       ref="commentContainer"
+       id="comment-container"
+  >
+    <form class="comment-wrap">
       <!--   输入框   -->
+      <span style="font-size: 24px"> 评论 </span>
       <div class="comment-input">
+        <el-input
+            ref="commentInputRef"
+            v-model="userComment"
+            placeholder="评论..."
+            type="textarea"
+            :autosize="{minRows: 4, maxRows: 10}"
+            style="font-size: 16px"
+        >
+        </el-input>
 
+        <div class="function_buttons">
+          <el-button @click="uploadComment(userComment)">评论</el-button>
+          <el-button
+              circle
+              style="color: rgb(225,167,49)"
+              @click="openEmoji"
+          >
+            <font-awesome-icon icon="fa-solid fa-face-grin"/>
+          </el-button>
+        </div>
       </div>
 
       <!--   评论列表   -->
-      <div class="comment-list">
-        <ul>
-          <li
-              v-for="(comment, index) in comments"
-              :key="index"
-          >
-            {{ comment }}
-          </li>
-        </ul>
+      <div class="comment-list" id="comment-list">
+        <!-- 父级评论  -->
+        <div
+            v-for="(comment, index) in rootComments"
+            class="root-comment-item"
+            :key="index"
+        >
+          <div class="comment-info-container">
+
+            <el-avatar :size="50"
+                       :src="comment.user.userProfilePhotoPath ||
+                             `https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png`"
+            >
+            </el-avatar>
+
+            <!--    用户昵称      -->
+            <span> {{
+                comment.user.userNickname
+              }}</span>
+            <!--    评论时间      -->
+            <span style="color: #a1a3a9"> {{ comment.createDate }} </span>
+
+            <!-- 点赞按钮 -->
+            <div style="margin-left: auto">
+              <el-button class="like-button">
+                <font-awesome-icon icon="fa-solid fa-thumbs-up"/>
+                &nbsp;
+                {{ comment.likeCount !== 0 ? comment.likeCount : '' }}
+              </el-button>
+            </div>
+          </div>
+
+          <!--     评论内容     -->
+          <div class="comment-content" style="">
+            {{ comment.content }}
+          </div>
+
+          <!-- 回复按钮  -->
+          <div class="comment-function-container">
+            <el-button
+                class="reply-button"
+                @click="doReply(comment.user.userId)"
+            >
+              <font-awesome-icon icon="fa-solid fa-message"/>
+              &nbsp;
+              <span style="font-size: 1rem">
+                  {{ replyComments[comment.commentId] ? replyComments[comment.commentId].length : "" }}
+              </span>
+            </el-button>
+          </div>
+
+          <!--   子评论/回复评论   -->
+          <div class="reply-list">
+
+            <div class="reply-comment-item"
+                 v-for="(reply, index) in replyComments[comment.commentId]"
+                 :key="index"
+            >
+              <!--  评论信息  -->
+              <div class="comment-info-container">
+
+                <el-avatar :size="50"
+                           :src="reply.user.userProfilePhotoPath ||
+                             `https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png`"
+                >
+                </el-avatar>
+
+                <!--    用户昵称      -->
+                <span> {{
+                    reply.user.userNickname
+                  }}</span>
+                <!--    评论时间      -->
+                <span style="color: #a1a3a9"> {{ reply.createDate }} </span>
+
+                <span> 回复:  {{ commentIdUserNameMap[reply.parentId] }}</span>
+                <!-- 点赞按钮 -->
+                <div style="margin-left: auto">
+                  <el-button class="like-button">
+                    <font-awesome-icon icon="fa-solid fa-thumbs-up"/>
+                    &nbsp;
+                    {{ comment.likeCount !== 0 ? comment.likeCount : '' }}
+                  </el-button>
+                </div>
+              </div>
+
+              <!--     评论内容     -->
+              <div class="comment-content" style="">
+                {{ reply.content }}
+              </div>
+              <!-- 回复按钮  -->
+              <div class="comment-function-container">
+                <el-button class="reply-button" style="color:#c5c6cb;">
+                  <font-awesome-icon icon="fa-solid fa-message"/>
+                </el-button>
+              </div>
+<!--              {{ reply }}-->
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </form>
   </div>
+
 </template>
 
 <script>
@@ -115,6 +238,8 @@ export default {
   name: "Article",
   components: {Editor, CommonBanner},
   setup(props, context) {
+
+    // 一些全局的设置
     // 设置 marked
     const tocObj = {
       add: function (text, level) {
@@ -205,15 +330,37 @@ export default {
     // 确保切换过来后,滚动条的位置初始化
     globalScrollBar.scrollTo(0, 0);
 
+
+    // ===== 页面逻辑相关变量 =====
     // 控制相关
     const onInit = ref(true);
 
     // 显示相关
     const articleDetail = ref({});
     const article = ref({});
-    const comments = ref({});
+    let comments = ref();
+    // 存放所有顶级/根评论
+    const rootComments = ref({});
+    // key : parentId,  value: 子评论的列表, 按照顺序排列
+    const replyComments = ref({});
+    const toc = ref('');
+    // 页面显示
+    const timeUsed = ref("");
+    let wordCount = ref(0);
+    let html = ref('');
+
+    // 评论相关
+    const userIdNameMap = {};
+    const commentIdUserNameMap = {};
+    // 回复
+    const replyUserId = ref();
 
 
+    // 用户评论
+    const userComment = ref('');
+
+
+    // ===== 具体逻辑 =====
     let load = async function () {
       article.value = await JSON.parse(localStorage.getItem("articleCache"));
       // 本地缓存中不存在
@@ -226,6 +373,7 @@ export default {
       return promise;
     }
 
+    // 计算字数
     let calWordCount = function (data) {
       let pattern = /[a-zA-Z0-9_\u0392-\u03c9]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+/g;
       let m = data.match(pattern);
@@ -243,10 +391,8 @@ export default {
       return count;
     }
 
-    // 页面显示
-    const timeUsed = ref("");
-    let wordCount = ref(0);
-    let html = ref('');
+
+    // 向后端请求
     let promise = load();
     promise.then(response => {
       // 本地缓存中不存在
@@ -255,13 +401,56 @@ export default {
       }
       articleDetail.value = response.data.articleDetail;
       comments.value = response.data.comments;
-      console.log(article.value);
-      console.log(articleDetail.value);
+
+      // 用于评论区的变量
+      const parentIdMap = {};
+
+      // 先找出所有的根评论
+      comments.value.forEach(v => {
+        if (v.parentId === null || v.parentId === -1 || v.parentId === '') {
+          rootComments.value[v.commentId] = v;
+          replyComments.value[v.commentId] = [];
+        } else {
+          parentIdMap[v.commentId] = v.parentId;
+        }
+        userIdNameMap[v.user.userId] = v.user.userNickname;
+        commentIdUserNameMap[v.commentId] = v.user.userNickname;
+      });
+
+      // 解析评论comments, 将所有回复根据parentId 串成链表
+      comments.value.forEach(v => {
+        // 如果不再根级的列表里则添加
+        if (v.parentId === null || v.parentId === -1 || v.parentId === '') {
+        } else {
+          let parentId = parentIdMap[v.commentId];
+          let step = comments.value.length;
+          while (parentIdMap[parentId] !== undefined) {
+            parentId = parentIdMap[parentId];
+            // 最多尝试次数,超过这个次数,则不存在
+            if (--step < 0) {
+              break;
+            }
+          }
+          // step < 0
+          if (step < 0) {
+            return;
+          }
+          replyComments.value[parentId].push(v);
+        }
+      });
+
+      // 按照日期排序
+      for (let k in replyComments.value) {
+        replyComments.value[k].sort((a, b) => {
+          return -(new Date(b.createDate) - new Date(a.createDate));
+        });
+      }
 
       // 进行解析
       if ("md" === articleDetail.value.contentType) {
         html.value = marked(articleDetail.value.content);
-        html.value = tocObj.toHTML() + html.value;
+        // html.value = tocObj.toHTML() + html.value;
+        toc.value = tocObj.toHTML();
       } else {
         html.value = articleDetail.value.content;
       }
@@ -273,13 +462,53 @@ export default {
     });
 
 
-    return {backgroundImg, article, wordCount, timeUsed, html, onInit, comments};
+    return {
+      backgroundImg,
+      article,
+      wordCount,
+      timeUsed,
+      html,
+      onInit,
+      comments,
+      toc,
+      userComment,
+      rootComments,
+      replyComments,
+      idNameMap: userIdNameMap,
+      replyUserId,
+      globalScrollBar,
+      commentIdUserNameMap,
+    };
   },
   methods: {
     anchor(id) {
-      let globalScrollBar = this.$store.state.globalScrollBar;
       let elementById = document.getElementById(id);
-      globalScrollBar.scrollTo(0, elementById.offsetTop + document.documentElement.clientHeight * .36);
+      this.globalScrollBar.scrollTo(0, elementById.offsetTop + document.documentElement.clientHeight * .35);
+    },
+    initComments(comments) {
+      if (comments.length > 0) {
+        comments.forEach(v => {
+          if (!this.hadExpendSonList.includes(v.id)) {
+          }
+        });
+      }
+    },
+    uploadComment(comment) {
+      if (comment.replace(/(^\s*)|(\s*$)/g, "").length === 0) {
+        ElMessage("没有有效输入");
+        return;
+      }
+      alert(comment);
+    },
+    //todo: 打开emoji面板
+    openEmoji() {
+      ElMessage("暂不支持Emoji表情😂");
+    },
+    doReply(userId) {
+      console.log(userId)
+      this.replyUserId = userId;
+      this.globalScrollBar.scrollTo(0, this.$refs.commentContainer.offsetTop);
+      this.$refs.commentInputRef.$el.style.placeholder = "回复" + this.idNameMap[userId];
     }
   },
   mounted() {
@@ -290,13 +519,28 @@ export default {
 
 <style scoped>
 
+
 /* 内容区 */
-.main-content {
-  background-color: white;
+
+.main-content-container {
+  position: relative;
+  width: 100vw;
 }
+
+.main-content {
+  display: inline-block;
+  position: relative;
+  background-color: white;
+  /* 屏幕宽度 100vw - 960 / 2 即居中*/
+  left: calc((100vw - 960px) / 2);
+
+}
+
 
 .article-container {
   width: 960px;
+  max-width: 960px;
+  min-width: 960px;
   height: auto;
   border-radius: inherit;
 }
@@ -381,11 +625,91 @@ export default {
 }
 
 .comment-input {
+  margin-top: 16px;
+}
 
+.comment-content {
+  display: block;
+  min-height: 2.4rem;
+  line-height: 1.2rem;
+  margin-top: 10px;
+  margin-left: 50px;
+}
+
+.comment-function-container {
+  position: relative;
+  margin-left: 50px;
+}
+
+.reply-button {
+  border: none;
+  font-size: 1.3rem;
+  color: #a1a3a9
+}
+
+/* 输入栏下方按钮样式 */
+.function_buttons {
+  display: block;
+  margin-top: 16px;
+}
+
+.function_buttons > button {
+  float: right;
+  margin: 0 5px;
 }
 
 .comment-list {
+  margin-top: 66px;
 }
+
+.comment-info-container {
+  position: relative;
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  display: flex;
+  align-items: center
+}
+
+.comment-info-container span {
+  margin-right: 5px;
+}
+
+.like-button {
+
+}
+
+/*右侧导航栏 */
+.right-nav-container {
+  min-width: 400px;
+  min-height: 500px;
+  border-radius: 16px;
+  background-color: white;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 70px;
+  right: 10vw;
+  float: right;
+  display: inline-block;
+  margin-top: 24px;
+}
+
+.root-comment-item {
+
+}
+
+.reply-list {
+  position: relative;
+  margin-left: 25px;
+  padding: 10px;
+  /*border: 1px #a1a3a9 solid;*/
+  /*border-radius: 16px;*/
+}
+
+.reply-comment-item {
+  margin: 5px 0;
+}
+
 
 </style>
 

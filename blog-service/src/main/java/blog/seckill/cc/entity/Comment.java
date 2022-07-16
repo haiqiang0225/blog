@@ -1,6 +1,7 @@
 package blog.seckill.cc.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -25,24 +26,28 @@ public class Comment {
 
     // 评论id
     @TableId(type = IdType.AUTO)
-    public Long commentId;
+    private Long commentId;
 
     // 发表评论的用户的id
-    public Long userId;
+    private Long userId;
 
     // 评论的文章的id
-    public Long articleId;
+    private Long articleId;
 
     // 点赞数
-    public Long likeCount;
+    private Long likeCount;
 
     // 发表日期
-    public Date createDate;
+    private Date createDate;
 
     // 内容
-    public String content;
+    private String content;
 
     // 父评论的id
-    public Long parentId;
+    private Long parentId;
+
+    // 这条评论的用户信息
+    @TableField(exist = false)
+    private User user;
 
 }

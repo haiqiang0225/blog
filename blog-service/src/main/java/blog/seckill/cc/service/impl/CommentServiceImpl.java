@@ -27,4 +27,9 @@ public class CommentServiceImpl implements CommentService {
         queryWrapper.eq("article_id", articleId);
         return commentMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public List<Comment> queryCommentsWithUserInfoByArticleId(Long articleId) {
+        return commentMapper.queryCommentsWithUserInfoByArticleId(articleId);
+    }
 }

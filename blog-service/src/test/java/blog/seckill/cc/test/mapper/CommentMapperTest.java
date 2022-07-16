@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * description: CommentMapperTest <br>
@@ -27,4 +28,12 @@ public class CommentMapperTest extends TestBase {
         assert comment != null;
         System.out.println(">>>>>>>>>>>" + comment);
     }
+
+    @Test
+    public void testQueryCommentsWithUserInfoByArticleId() {
+        List<Comment> comments = commentMapper.queryCommentsWithUserInfoByArticleId(20L);
+        assert !comments.isEmpty();
+        System.out.println(">>>>>>>>>>> " + comments);
+    }
 }
+

@@ -71,7 +71,7 @@ public class ArticleController {
         Article article = articleService.getArticle(articleId);
         ArticleDetail articleDetail = articleService.queryArticleDetail(articleId);
         List<Tag> tags = tagService.queryArticleTags(articleId);
-        List<Comment> comments = commentService.queryCommentsByArticleId(articleId);
+        List<Comment> comments = commentService.queryCommentsWithUserInfoByArticleId(articleId);
         article.setTags(tags);
         Result result = new Result();
 

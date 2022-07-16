@@ -41,11 +41,12 @@
         <div class="article-info">
           <!--  文章标题    -->
           <div class="title">
-            <router-link
-                :to="`/article/` + article.articleId"
+            <a
+                @click="toArticleDetail(article)"
+                style="height: 100%; cursor: pointer;"
             >
               {{ article.title }}
-            </router-link>
+            </a>
           </div>
           <!--   是否置顶   -->
           <span v-if="article.topFlag" style="color: #ff7242; cursor: default;">
@@ -530,6 +531,7 @@ export default {
   width: 300px;
   height: auto;
   position: sticky;
+  position: -webkit-sticky;
   top: 50px;
   border-radius: inherit;
   margin: 15px 10px;
