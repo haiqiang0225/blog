@@ -23,16 +23,16 @@ public class ArticleDetail {
 
     // 文章详情id
     @TableId(type = IdType.AUTO)
-    public Long articleDetailId;
+    private Long articleDetailId;
 
     // 内容
-    public String content;
+    private String content;
 
 
     // 文章id
-    public Long articleId;
+    private Long articleId;
 
     // 文章内容的形式 : md, html
-    public String contentType;
+    private String contentType;
 
 }

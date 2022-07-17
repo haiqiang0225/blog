@@ -1,5 +1,6 @@
 package blog.seckill.cc.service;
 
+import blog.seckill.cc.domain.Result;
 import blog.seckill.cc.entity.Comment;
 
 import java.util.List;
@@ -33,4 +34,6 @@ public interface CommentService {
      * @return java.util.List<blog.seckill.cc.entity.Comment>
      */
     List<Comment> queryCommentsWithUserInfoByArticleId(Long articleId);
+
+    Result insertComment(Comment comment);
 }

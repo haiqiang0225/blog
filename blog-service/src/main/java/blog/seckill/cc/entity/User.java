@@ -25,34 +25,60 @@ public class User {
 
     // 用户id
     @TableId(type = IdType.AUTO)
-    Long userId;
+    private Long userId;
 
     // 用户ip
-    String userIp;
+    private String userIp;
 
     // 用户ipv6
-    String userIpv6;
+    private String userIpv6;
 
     // 用户密码
     //todo: 使用加密算法
-    String userPassword;
+    private String userPassword;
 
     // 用户邮箱
-    String userEmail;
+    private String userEmail;
 
     // 用户头像的Path,用于从阿里云oss读取时使用
-    String userProfilePhotoPath;
+    private String userProfilePhotoPath;
 
     // 注册时间
-    Date userRegisterTime;
+    private Date userRegisterTime;
 
     // 手机号
-    String userPhoneNumber;
+    private String userPhoneNumber;
 
     // 昵称
-    String userNickname;
+    private String userNickname;
 
     // 用户名
-    String userName;
+    private String userName;
 
+    // 用户是否被禁用
+    private Boolean userEnabled;
+
+    // 上次登录时间
+    private Date userLastLoginTime;
+
+    // 创建该用户的用户id
+    private Long userCreateUserId;
+
+    // 更新该用户信息的用户id
+    private Long userUpdateUserId;
+
+    // 删除标志
+    private Boolean userDelFlag;
+
+    // 过期标志
+    private Boolean userExpiredFlag;
+
+    // 用户证书是否过期
+    private Boolean userCredentialsExpiredFlag;
+
+    public void erasePrivateInfo() {
+        this.userPassword = null;
+        this.userPhoneNumber = null;
+        this.userEmail = null;
+    }
 }

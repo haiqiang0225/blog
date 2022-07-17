@@ -14,6 +14,12 @@ axios.defaults.withCredentials = true
 // 默认 post 请求，使用 multipart/form-data 形式
 axios.defaults.headers.post["Content-Type"] = "multipart/form-data;charset=UTF-8";
 
+// 添加token
+let token = localStorage.getItem("token");
+if (token) {
+    axios.defaults.headers.token = token;
+}
+
 // 添加请求拦截器
 axios.interceptors.request.use(
     function (config) {

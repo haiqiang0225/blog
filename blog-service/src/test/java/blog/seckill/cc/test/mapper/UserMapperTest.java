@@ -25,5 +25,6 @@ public class UserMapperTest extends TestBase {
     public void testUserMapper() {
         User user = userMapper.selectById(0);
         assert user != null;
+        System.out.println(user);
     }
 }

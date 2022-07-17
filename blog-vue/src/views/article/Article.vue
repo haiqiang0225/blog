@@ -83,7 +83,6 @@
     </div>
   </div>
 
-  <!-- todo:评论区树形展示 -->
   <!-- 评论区 -->
   <div class="comment-container"
        ref="commentContainer"
@@ -96,7 +95,7 @@
         <el-input
             ref="commentInputRef"
             v-model="userComment"
-            placeholder="评论..."
+            :placeholder="placeHolder"
             type="textarea"
             :autosize="{minRows: 4, maxRows: 10}"
             style="font-size: 16px"
@@ -157,7 +156,7 @@
           <div class="comment-function-container">
             <el-button
                 class="reply-button"
-                @click="doReply(comment.user.userId)"
+                @click="doReply(comment.user.userId, comment.commentId, comment.commentId)"
             >
               <font-awesome-icon icon="fa-solid fa-message"/>
               &nbsp;
@@ -207,11 +206,14 @@
               </div>
               <!-- 回复按钮  -->
               <div class="comment-function-container">
-                <el-button class="reply-button" style="color:#c5c6cb;">
+                <el-button class="reply-button"
+                           style="color:#c5c6cb;"
+                           @click="doReply(reply.user.userId, comment.commentId, reply.commentId)"
+                >
                   <font-awesome-icon icon="fa-solid fa-message"/>
                 </el-button>
               </div>
-<!--              {{ reply }}-->
+              <!--              {{ reply }}-->
             </div>
           </div>
         </div>
@@ -339,6 +341,7 @@ export default {
     const articleDetail = ref({});
     const article = ref({});
     let comments = ref();
+    const placeHolder = ref("请输入评论...");
     // 存放所有顶级/根评论
     const rootComments = ref({});
     // key : parentId,  value: 子评论的列表, 按照顺序排列
@@ -354,6 +357,8 @@ export default {
     const commentIdUserNameMap = {};
     // 回复
     const replyUserId = ref();
+    const replyRootCommentId = ref();
+    const replyParentId = ref();
 
 
     // 用户评论
@@ -435,14 +440,18 @@ export default {
           if (step < 0) {
             return;
           }
-          replyComments.value[parentId].push(v);
+          if (replyComments.value[parentId]) {
+            replyComments.value[parentId].push(v);
+          } else {
+            console.log(parentId)
+          }
         }
       });
 
       // 按照日期排序
       for (let k in replyComments.value) {
         replyComments.value[k].sort((a, b) => {
-          return -(new Date(b.createDate) - new Date(a.createDate));
+          return (new Date(b.createDate) - new Date(a.createDate));
         });
       }
 
@@ -459,8 +468,8 @@ export default {
       timeUsed.value = `${Math.ceil(wordCount.value / 300)} 分钟`;
     }).catch(error => {
       ElMessage.error("出错了,请刷新试试");
+      console.log(error)
     });
-
 
     return {
       backgroundImg,
@@ -476,8 +485,11 @@ export default {
       replyComments,
       idNameMap: userIdNameMap,
       replyUserId,
+      replyRootCommentId,
       globalScrollBar,
       commentIdUserNameMap,
+      placeHolder,
+      replyParentId,
     };
   },
   methods: {
@@ -485,30 +497,70 @@ export default {
       let elementById = document.getElementById(id);
       this.globalScrollBar.scrollTo(0, elementById.offsetTop + document.documentElement.clientHeight * .35);
     },
-    initComments(comments) {
-      if (comments.length > 0) {
-        comments.forEach(v => {
-          if (!this.hadExpendSonList.includes(v.id)) {
-          }
-        });
-      }
-    },
     uploadComment(comment) {
       if (comment.replace(/(^\s*)|(\s*$)/g, "").length === 0) {
         ElMessage("没有有效输入");
         return;
       }
-      alert(comment);
+      if (this.onInit) {
+        ElMessage("请稍等");
+      }
+      let url = "/api/comment/upload";
+      let data = new FormData();
+      let curUser = JSON.parse(localStorage.getItem("curUser"));
+      let userId = curUser.userId;
+      if (userId !== undefined) {
+        data.set("userId", userId);
+      }
+      data.set("content", this.userComment);
+      data.set("articleId", this.article.articleId);
+      if (this.replyParentId !== undefined) {
+        console.log(this.replyParentId)
+        data.set("parentId", this.replyParentId);
+      } else {
+        data.set("parentId", -1);
+      }
+      axios.post(url, data)
+          .then(res => {
+            let comment = res.data.comment;
+            comment.user = curUser;
+            // 如果是根评论,放到根评论的列表里
+            if (this.replyRootCommentId === undefined || this.replyRootCommentId === null) {
+              this.rootComments[comment.commentId] = comment;
+            } else {
+              this.replyComments[this.replyRootCommentId].unshift(comment);
+            }
+
+            // 重置
+            this.userComment = "";
+            this.replyUserId = undefined;
+            this.replyRootCommentId = undefined;
+            ElMessage.success("评论成功!");
+
+          })
+          .catch(err => {
+            if (err.response && err.response.status === 403) {
+              ElMessage.error("请登录后再评论!");
+            } else {
+              ElMessage.error("出错了!刷新试试");
+            }
+          })
     },
     //todo: 打开emoji面板
     openEmoji() {
       ElMessage("暂不支持Emoji表情😂");
     },
-    doReply(userId) {
-      console.log(userId)
+    doReply(userId, rootCommentId, parentId) {
+      console.log(parentId)
+      this.replyRootCommentId = rootCommentId;
       this.replyUserId = userId;
+      this.replyParentId = parentId;
       this.globalScrollBar.scrollTo(0, this.$refs.commentContainer.offsetTop);
-      this.$refs.commentInputRef.$el.style.placeholder = "回复" + this.idNameMap[userId];
+      this.placeHolder = "回复" + this.idNameMap[userId];
+    },
+    // 判断用户是否已经登录
+    isAlreadyLogin() {
+      return localStorage.getItem("token") !== null;
     }
   },
   mounted() {

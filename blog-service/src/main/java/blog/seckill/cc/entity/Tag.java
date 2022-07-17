@@ -23,14 +23,14 @@ public class Tag {
 
     // 标签id
     @TableId(type = IdType.AUTO)
-    public Long tagId;
+    private Long tagId;
 
     // 名称
-    public String name;
+    private String name;
 
     // 别名
-    public String alias;
+    private String alias;
 
     // 描述
-    public String description;
+    private String description;
 }

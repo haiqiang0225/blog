@@ -1,6 +1,6 @@
 package blog.seckill.cc.controller;
 
-import blog.seckill.cc.entity.Result;
+import blog.seckill.cc.domain.Result;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

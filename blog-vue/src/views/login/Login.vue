@@ -4,7 +4,8 @@
       :background-image-url="`https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpe`"></CommonHello>
   <div class="main-content-wrap">
     <div class="main-content content-glass">
-      <form action="#" class="login-wrap">
+
+      <form action="#" class="register-wrap" v-show="!isShowLogin">
 
 
         <el-upload class="user-avatar"
@@ -103,7 +104,53 @@
           </el-input>
         </div>
 
-        <el-button type="info" class="login-btn" @click="doLogin">登陆/注册</el-button>
+        <div class="button-wrap">
+          <el-button type="info" class="login-btn" @click="doRegister">注册</el-button>
+          <el-button class="change-button" @click="isShowLogin = !isShowLogin">
+            > 登陆
+          </el-button>
+        </div>
+
+      </form>
+
+
+      <form class="login-wrap" v-show="isShowLogin">
+
+        <!--    用户名    -->
+        <el-input class="login-input"
+                  placeholder="请输入用户名"
+                  v-model="username"
+                  maxlength="20"
+                  clearable
+        >
+          <template #prepend>
+            <font-awesome-icon icon="fa-solid fa-user"/>
+          </template>
+        </el-input>
+
+
+        <!--    密码    -->
+        <el-input class="login-input"
+                  placeholder="请输入密码"
+                  v-model="password"
+                  maxlength="32"
+                  type="password"
+                  show-password
+                  clearable
+        >
+          <template #prepend>
+            <font-awesome-icon icon="fa-solid fa-lock"/>
+          </template>
+        </el-input>
+
+
+        <div class="button-wrap">
+          <el-button type="info" class="login-btn" @click="doLogin">登陆</el-button>
+          <el-button class="change-button" @click="isShowLogin = !isShowLogin">
+            > 注册
+          </el-button>
+        </div>
+
       </form>
     </div>
   </div>
@@ -119,6 +166,12 @@ export default {
   name: "Login",
   components: {CommonHello,},
   setup() {
+    const alreadyLogin = localStorage.getItem("token") !== null;
+    if (alreadyLogin) {
+      ElMessage.success("您已经登录了");
+    }
+
+    const isShowLogin = ref(true);
     // 头像
     const avatarURL = ref('');
 
@@ -133,7 +186,7 @@ export default {
     const phone = ref('');
 
     const verifyCode = ref('');
-    return {avatarURL, username, nickname, password, emailSelect, email, phone, verifyCode};
+    return {avatarURL, username, nickname, password, emailSelect, email, phone, verifyCode, isShowLogin};
   },
   methods: {
     phoneMustBeNumber() {
@@ -179,12 +232,33 @@ export default {
       ElMessage.error('暂未支持');
     },
     doLogin() {
+      let data = new FormData();
+      data.set("userName", this.username);
+      data.set("userPassword", this.password);
+      let url = "/api/user/login";
+      axios.post(url, data)
+          .then(response => {
+            if (response.data.token) {
+              // 登陆成功
+              localStorage.setItem("token", response.data.token);
+              localStorage.setItem("curUser", JSON.stringify(response.data.user));
+              ElMessage.success("登陆成功");
+              setTimeout(() => {
+                this.$router.push("/");
+              }, 500);
+            }
+          })
+          .catch(error => {
+            if (error.response.status === 403) {
+              ElMessage.info("您已经登录了,不需要再登陆");
+            } else {
+              ElMessage.error("出错了,刷新试试")
+            }
+          });
+    },
+    doRegister() {
 
     },
-    test() {
-      alert(1);
-    }
-
   }
 }
 </script>
@@ -199,23 +273,35 @@ export default {
 
 .main-content {
   position: absolute;
-  width: 30%;
+  width: 760px;
   max-height: 35vh;
   min-height: 400px;
   min-width: 600px;
-  overflow-y: auto;
   top: 13vh;
+  /*overflow: hidden;*/
 }
 
 
-.login-wrap {
+.register-wrap {
   position: relative;
   align-self: center;
-  width: 60%;
+  width: 70%;
+  min-width: 500px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
+
+.login-wrap {
+  position: relative;
+  align-self: center;
+  width: 40%;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 
 /* 用户头像 */
 .user-avatar {
@@ -232,13 +318,26 @@ export default {
   margin: 5px auto;
 }
 
-.login-btn {
+.button-wrap {
   position: relative;
-  display: block;
+}
+
+.login-btn {
+  position: absolute;
+  display: inline-block;
   width: 92px;
   left: 0;
+  right: 108px;
+  margin: 5px auto 5px auto;
+}
+
+.change-button {
+  position: absolute;
+  display: inline-block;
+  width: 92px;
+  left: 108px;
   right: 0;
-  margin: 5px auto;
+  margin: 5px auto 5px auto;
 }
 
 .phone-wrap {

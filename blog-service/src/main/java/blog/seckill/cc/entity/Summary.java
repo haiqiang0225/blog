@@ -22,23 +22,23 @@ import java.util.Date;
 @ToString
 public class Summary {
     @TableId
-    Long id;
+    private Long id;
 
     // 访问时间
-    Date visitDate;
+    private Date visitDate;
 
     // 访问源所在实际物理地址
-    String visitorLocation;
+    private String visitorLocation;
 
     // 访问来源
-    String visitRoute;
+    private String visitRoute;
 
     // 访问设备
-    String visitDevice;
+    private String visitDevice;
 
     // ipv4地址
-    String ip;
+    private String ip;
 
     // ipv6地址
-    String ipv6;
+    private String ipv6;
 }

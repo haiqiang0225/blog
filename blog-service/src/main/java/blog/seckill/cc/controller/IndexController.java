@@ -1,7 +1,7 @@
 package blog.seckill.cc.controller;
 
 import blog.seckill.cc.entity.Article;
-import blog.seckill.cc.entity.Result;
+import blog.seckill.cc.domain.Result;
 import blog.seckill.cc.entity.Summary;
 import blog.seckill.cc.entity.Tag;
 import blog.seckill.cc.service.ArticleService;
@@ -50,7 +50,7 @@ public class IndexController {
      * @param start 开始的下标
      * @param count 本次返回的总数
      * @param total 总条数
-     * @return blog.seckill.cc.entity.Result
+     * @return blog.seckill.cc.domain.Result
      */
     @GetMapping("/get")
     public Result getArticles(@RequestParam("start") int start,

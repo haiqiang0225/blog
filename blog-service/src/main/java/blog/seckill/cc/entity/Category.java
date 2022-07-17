@@ -23,17 +23,17 @@ public class Category {
 
     // 分类的id
     @TableId(type = IdType.AUTO)
-    public Long categoryId;
+    private Long categoryId;
 
     // 分类名
-    public String name;
+    private String name;
 
     //  别名
-    public String alias;
+    private String alias;
 
     //  描述信息
-    public String description;
+    private String description;
 
     //  父类id
-    public Long parentId;
+    private Long parentId;
 }

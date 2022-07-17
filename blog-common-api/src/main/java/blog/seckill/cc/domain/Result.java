@@ -1,4 +1,4 @@
-package blog.seckill.cc.entity;
+package blog.seckill.cc.domain;
 
 import java.util.HashMap;
 import java.util.Map;
