@@ -1,18 +1,18 @@
 <template>
   <CommonBanner :backgroundImageUrl="pic"></CommonBanner>
-  <div class="main-content">
+  <div class="main-content" v-loading="onInit">
     <div class="tag-container content-glass">
       <h1>标签</h1>
 
       <router-link
-          to="#"
+          to=""
           class="tag-item"
           :style="{color: colorList[(index + randomSeed) % colorList.length]}"
-          v-for="(item, index) in tag"
+          v-for="(item, index) in tags"
           :key="index"
       >
 
-        {{ item.title }}
+        {{ item.name }}
 
       </router-link>
 
@@ -21,7 +21,9 @@
 </template>
 
 <script>
+import {ref} from "vue"
 import CommonBanner from "@/views/banner/CommonBanner";
+import axios from "@/utils/axios"
 
 export default {
   name: "Tag",
@@ -29,7 +31,18 @@ export default {
   setup() {
     //todo: 后端
     const pic = require('@/assets/image/index-main.jpg');
-    const tag = [{id: 0, title: 'Java'}, {id: 1, title: 'MySQL'}, {id: 2, title: 'Vue'}];
+    const tags = ref();
+    const onInit = ref(true);
+
+    let url = "/api/tag/get/all"
+    axios.get(url)
+        .then(res => {
+          tags.value = res.data.tags;
+          onInit.value = false;
+        })
+        .catch(err => {
+
+        })
 
 
     // 默认有的颜色,减少随机生成深色颜色的调用次数
@@ -59,7 +72,7 @@ export default {
       colorList.push(randomColor(colorList));
     }
 
-    return {pic, tag, colorList, randomSeed};
+    return {pic, tags, colorList, randomSeed, onInit};
   },
 }
 </script>

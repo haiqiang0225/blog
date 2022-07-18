@@ -1,6 +1,7 @@
 package blog.seckill.cc.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -36,4 +37,8 @@ public class Category {
 
     //  父类id
     private Long parentId;
+
+    // 该分类下文章的总数量
+    @TableField(exist = false)
+    private Long count;
 }

@@ -1,7 +1,7 @@
 <template>
 
   <CommonBanner></CommonBanner>
-  <div class="main-content">
+  <div class="main-content" v-loading="onInit">
     <div class="category-container content-glass">
       <h1>分类</h1>
       <!--   分类列表   -->
@@ -9,17 +9,18 @@
 
         <!--    列表项    -->
         <li
-            v-for="item in categoryList"
+            v-for="(item, index) in categoryList"
             class="category-item"
+            :key="index"
         >
           <router-link
               to=""
               :key="item.id"
           >
             <span>● &nbsp;</span>
-            {{ item.title }}
+            {{ item.name }}
             &nbsp;
-            <div class="category-count">({{ `0` }})</div>
+            <div class="category-count">({{ item.count ? item.count : 0 }})</div>
 
           </router-link>
 
@@ -37,21 +38,29 @@ import {ref} from "vue"
 import CommonBanner from "@/views/banner/CommonBanner";
 
 import bannerImgURL from "@/assets/image/category-hello.jpg";
+import axios from "@/utils/axios";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "Category",
   components: {CommonBanner},
   setup() {
-    //todo: 后端请求分类
-    const categoryList = [{
-      id: 1,
-      title: 'Java'
-    }, {
-      id: 2,
-      title: 'Java'
-    }];
+    //todo: 点击分类跳转到文章列表页并显示所有该分类下的文章
+    const categoryList = ref();
+    const onInit = ref(true);
 
-    return {categoryList};
+    let url = "/api/category/get/all";
+    axios.get(url)
+        .then(res => {
+          categoryList.value = res.data.categories;
+          onInit.value = false;
+        })
+        .catch(err => {
+          ElMessage.error("出错了");
+          console.log(err);
+        });
+
+    return {categoryList, onInit};
   },
 }
 </script>

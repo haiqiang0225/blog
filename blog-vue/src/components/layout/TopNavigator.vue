@@ -10,7 +10,7 @@
       <div class="nav-container">
         <div class="nav-left">
           <img src="" alt="">
-          <span>Blog</span>
+          <span></span>
         </div>
 
         <div class="nav-right">
