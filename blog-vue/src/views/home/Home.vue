@@ -7,21 +7,22 @@
     <ul v-infinite-scroll="load"
         class="article-list"
         :infinite-scroll-disabled="disabledInfiniteLoading"
+        v-loading="onInit"
     >
       <!--   文章卡片   -->
       <li class="article-list-item-card content-glass"
-          v-for="article in articleList"
-          :key="article.id">
+          v-for="(article, index) in articleList"
+          :key="index">
 
         <!-- 文章配图 -->
-        <router-link
-            to="#"
-            style="height: 100%"
+        <a
+            @click="toArticleDetail(article)"
+            style="height: 100%; cursor: pointer;"
         >
           <el-image
               class="article-image"
-              :class="article.id % 2 === 0? `image-float-left`: `image-float-right` "
-              :src="article.backgroundImageURL"
+              :class="index % 2 === 0? `image-float-left`: `image-float-right` "
+              :src="article.articleImageUrl"
               :fit="`fill`"
 
           >
@@ -33,19 +34,22 @@
               </div>
             </template>
           </el-image>
-        </router-link>
+        </a>
 
 
         <!--    文章信息    -->
         <div class="article-info">
           <!--  文章标题    -->
           <div class="title">
-            <router-link to="#">
+            <a
+                @click="toArticleDetail(article)"
+                style="height: 100%; cursor: pointer;"
+            >
               {{ article.title }}
-            </router-link>
+            </a>
           </div>
           <!--   是否置顶   -->
-          <span v-if="article.isTop" style="color: #ff7242; cursor: default;">
+          <span v-if="article.topFlag" style="color: #ff7242; cursor: default;">
             <font-awesome-icon icon="fa-arrow-up"/>
             置顶
            <span class="separator">|</span>
@@ -53,33 +57,34 @@
 
           <!--    发表时间    -->
           <font-awesome-icon icon="fa-calendar-day"/>
-          {{ article.createTime }}
+          {{ article.createDate || new Date().toLocaleDateString().replaceAll("/", "-") }}
           <span class="separator">|</span>
 
           <!--     文章分类     -->
           <router-link to="#" class="article-category">
             <font-awesome-icon icon="fa-th-large"/>
-            {{ `分类` }}
+            {{ article.category != null ? article.category.name : `` }}
           </router-link>
           <span class="separator">|</span>
 
           <!--     文章标签     -->
-          <router-link to="#" class="article-tag"
-                       v-for="tag in article.tags"
+          <router-link to="" class="article-tag"
+                       v-for="(tag, index) in article.tags"
+                       :key="index"
           >
             <font-awesome-icon icon="fa-tag"/>
-            {{ `标签` }}
+            {{ tag.name }}
           </router-link>
 
           <!--    文章内容    -->
           <div class="article-content">
-            {{ article.content }}
+            {{ article.abstractTitle }}
           </div>
 
         </div>
       </li>
 
-      <li class="loading-text" v-show="loading">
+      <li class="loading-text" v-show="loading && !onInit">
 
         <font-awesome-icon class="loading" style="position: relative; top: 10px; right: 10px"
                            icon="fa-solid fa-spinner"/>
@@ -94,7 +99,7 @@
     <div class="main-right-content" style="position: sticky; top: 50px;">
 
       <!--  随便看看    -->
-      <div class="look-random content-glass">
+      <div class="look-random content-glass" v-loading="onInit">
         <div class="mac-top-button-right">
           <span>
             <font-awesome-icon icon="fa-magnifying-glass"/>
@@ -104,18 +109,18 @@
 
         <!--    随便看看item    -->
         <div class="look-random-item"
-             v-for="item in lookRandoms"
-             :key="item.id"
+             v-for="(item, index) in lookRandoms"
+             :key="index"
         >
           <router-link
-              to=""
+              :to="`/article/` + item.id"
               style="height: 100%"
           >
             <!--      封面图      -->
             <div class="look-random-image-wrap">
               <el-image
                   class="look-random-image"
-                  :src="item.backgroundImageURL"
+                  :src="item.articleImageUrl"
                   :fit="`fill`"
                   lazy
               >
@@ -139,44 +144,46 @@
       </div>
 
       <!--   标签列表   -->
-      <div class="tag-list content-glass">
+      <div class="tag-list content-glass" v-loading="onInit">
         <div class="mac-top-button-right" style="margin-bottom: 24px;">
           <span>
-            <font-awesome-icon icon="fa-tags"/>
+            <font-awesome-icon icon="fa-tag"/>
             标签列表
           </span>
         </div>
 
         <!--  标签item  -->
-        <router-link
-            to="#"
-            class="tag-item"
-
-            :style="{color: colorList[(index + randomSeed) % colorList.length]}"
-
-            v-for="(item, index) in tags"
+        <div
+            v-for="(item, index) in tag"
             :key="index"
         >
+          <router-link
+              to="#"
+              class="tag-item"
+              :style="{color: colorList[(index + randomSeed) % colorList.length]}"
+          >
 
-          {{ item.title }}
+            {{ item.name }}
 
-        </router-link>
-
+          </router-link>
+        </div>
       </div>
 
       <!--   网站统计信息   -->
-      <div class="web-info content-glass">
+      <div class="web-info content-glass" v-loading="onInit">
         <div class="mac-top-button-right">
           <font-awesome-icon icon="fa-bar-chart"/>
           <span> &nbsp;&nbsp;网站统计信息</span>
         </div>
 
-        <div style="padding:4px 0 0; margin-top: 30px;">
-          运行时间: <span style="float: right">{{ webRunTime }}</span>
+        <div style="margin-top: 30px;line-height: 15px;">
+          运行时间: <span style="float: right; font-size: 14px;">
+                      {{ webRunTime }}
+                   </span>
         </div>
 
         <div style="padding:4px 0 0; margin-top: 20px;">
-          总访问量: <span style="float: right">{{ webTotalViewCount }}</span>
+          总访问量: <span style="float: right">{{ totalVisitCount }}</span>
         </div>
       </div>
     </div>
@@ -185,66 +192,103 @@
 
 <script>
 
-import {onMounted, ref} from "vue";
+import {onUnmounted, onMounted, ref} from "vue";
 import {ElMessage} from "element-plus"
 import HomeBanner from "@/views/banner/HomeBanner";
+import axios from "@/utils/axios";
+import JsCookie from "js-cookie";
+import router from "@/router";
 
 export default {
   name: "Home",
   components: {HomeBanner},
   setup() {
 
-    //TODO: 需要从服务器请求的数据
-    const webRunTime = '0 天 0 时 0 分 0 秒';
-    const webTotalViewCount = 0;
-    const lookRandoms = [{
-      title: '这少年便是闰土。我认识他时，也不过十多岁，',
-      backgroundImageURL: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpe'
-    }, {
-      title: '1',
-      backgroundImageURL: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
-    },
-      {
-        title: '1',
-        backgroundImageURL: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg'
-      }];
-    let articleSample = {
-      id: 0,
-      isTop: true,
-      title: '标题',
-      backgroundImageURL: "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-      createTime: new Date().toLocaleDateString(),
-      tags: ['123', '456'],
-      content: "这少年便是闰土。我认识他时，也不过十多岁，离现在将有三十年了；那时我的父亲还在世，家景也好，我正是一个少爷。那一年，我家是一件大祭祀的值年。这祭祀，说是三十多年才能轮到一回，所以很郑重。正（zhēng）月里供像，供品很多，祭器很讲究，拜的人也很多，祭器也很要防偷去。我家只有一个忙月（我们这里给人做工的分三种：整年给一定人家做工的叫长工；按日给人做工的叫短工；自己也种地，只在过年过节以及收租时候来给一定的人家做工的称忙月），忙不过来，他便对父亲说，可以叫他的儿子闰土来管祭器的。",
-    };
-    const articleList = ref([articleSample]);
+    // 网站统计信息
+    const webStartTime = new Date('2022/7/14 00:00:00');
+    const now = new Date();
+    let dateDiff = Math.abs(now - webStartTime);
+    const webRunTime = ref('');
+    // 总访问数
+    const totalVisitCount = ref(0);
 
-    const tags = [{id: 0, title: 'Java'}, {id: 1, title: 'MySQL'}, {id: 2, title: 'Vue'}];
 
-    //TODO: 加载文章的方法
+    // 展示信息
+    const lookRandoms = ref([]);
+    const articleList = ref([]);
+    let totalCount = ref(0);
+    const tags = ref([]);
+
+    // 页面状态控制
+    const onInit = ref(true);
     const loading = ref(false);
     const disabledInfiniteLoading = ref(false);
+
+    // 初次加载从后端请求, 这里包装一层,进行同步
+    let onFirstLoading = async function () {
+      loading.value = true;
+      let articleListVersion = localStorage.getItem("articleListVersion") || "";
+      let r = await axios.get("/api/index/get?start=0&count=10&version=" + articleListVersion);
+      loading.value = false;
+      onInit.value = false;
+      return r;
+    }
+    let res = onFirstLoading();
+    res.then(response => {
+      if (response.data.articleListVersion === localStorage.getItem("articleListVersion")) {
+        articleList.value = JSON.parse(localStorage.getItem("articleList"));
+        totalCount.value = JSON.parse(localStorage.getItem("totalCount"));
+        lookRandoms.value = JSON.parse(localStorage.getItem("lookRandoms"));
+        tags.value = JSON.parse(localStorage.getItem("tags"));
+        totalVisitCount.value = JSON.parse(localStorage.getItem("totalVisitCount"));
+        return;
+      }
+      articleList.value = response.data.data;
+      totalCount.value = response.data.count;
+      lookRandoms.value = response.data.lookRandoms;
+      tags.value = response.data.tags;
+      totalVisitCount.value = response.data.totalVisitCount;
+
+      // 存储到本地
+      localStorage.setItem("articleListVersion", response.data.articleListVersion);
+      localStorage.setItem("articleList", JSON.stringify(articleList.value));
+      localStorage.setItem("totalCount", JSON.stringify(totalCount.value));
+      localStorage.setItem("lookRandoms", JSON.stringify(lookRandoms.value));
+      localStorage.setItem("tags", JSON.stringify(tags.value));
+      localStorage.setItem("totalVisitCount", JSON.stringify(totalVisitCount.value));
+      if (!JsCookie.get("visited")) {
+        JsCookie.set("visited", true, {expires: 0.5});
+      }
+    }).catch(error => {
+      loading.value = false;
+    })
+
+
+    // 从后端请求
     const load = () => {
-      if (articleList.value.length >= 10) {
-        // ElMessage('没有更多了');
+      // 正在加载文章中则不允许调用该方法,避免出错以及优化性能
+      if (loading.value || onInit.value) {
+        return;
+      }
+      // 如果没有更多了
+      if (articleList.value.length >= totalCount.value) {
+        ElMessage('没有更多了');
         disabledInfiniteLoading.value = true;
-        // alert("没有更多了!");
         return;
       }
       loading.value = true;
-      setTimeout(() => {
+      let url = "/api/article/get?start=" + articleList.value.length + "&count=5&total=" + totalCount.value;
+      let promise = axios.get(url);
+      promise
+          .then(response => {
+            articleList.value = articleList.value.concat(response.data.data);
+            loading.value = false;
+          }).catch(error => {
         loading.value = false;
-        articleList.value[articleList.value.length] = {
-          id: articleList.value.length,
-          isTop: false,
-          title: '标题' + articleList.value.length,
-          backgroundImageURL: "https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg",
-          createTime: new Date().toLocaleDateString(),
-          tags: ['123', '456'],
-          content: "这少年便是闰土。我认识他时，也不过十多岁，离现在将有三十年了；那时我的父亲还在世，家景也好，我正是一个少爷。那一年，我家是一件大祭祀的值年。这祭祀，说是三十多年才能轮到一回，所以很郑重。正（zhēng）月里供像，供品很多，祭器很讲究，拜的人也很多，祭器也很要防偷去。我家只有一个忙月（我们这里给人做工的分三种：整年给一定人家做工的叫长工；按日给人做工的叫短工；自己也种地，只在过年过节以及收租时候来给一定的人家做工的称忙月），忙不过来，他便对父亲说，可以叫他的儿子闰土来管祭器的。",
-        };
-      }, 100);
+        ElMessage.error("出错了,请一会重试");
+      });
     }
+
 
     // 默认有的颜色,减少随机生成深色颜色的调用次数
     const colorList = ['#102b6a', '#d93a49', '#1d953f', '#dea32c',
@@ -273,19 +317,66 @@ export default {
       colorList.push(randomColor(colorList));
     }
 
+    let timeInterval = null;
+
+
+    // 将毫秒转成时间格式
+    let msToFormatDate = function (ms) {
+      if (ms) {
+        let day = Math.floor(ms / (24 * 60 * 60 * 1000));
+        let hour = Math.floor((ms / (60 * 60 * 1000) - day * 24));
+        let min = Math.floor(ms / (60 * 1000) - day * 24 * 60 - hour * 60);
+        let sec = Math.floor(ms / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
+
+        return `${day} 天 ${hour} 小时 ${min} 分 ${sec}秒`;
+      } else {
+        return ""
+      }
+    };
+
+    onMounted(() => {
+
+      timeInterval = setInterval(() => {
+        dateDiff += 1000;
+        webRunTime.value = msToFormatDate(dateDiff);
+      }, 1000);
+    });
+
+    onUnmounted(() => {
+      //清除定时器
+      timeInterval != null ? clearInterval(timeInterval) : null;
+    })
+
+
     return {
       articleList,
       webRunTime,
-      webTotalViewCount,
       lookRandoms,
-      tags,
+      tag: tags,
       loading,
       disabledInfiniteLoading,
       colorList,
       randomSeed,
-      load
+      load,
+      totalCount,
+      onInit,
+      totalVisitCount,
     };
 
+  },
+  watch: {
+    articleList(newVal, oldVal) {
+      newVal.forEach(item => {
+        if (item.createDate != null)
+          item.createDate = item.createDate.substring(0, 10);
+      });
+    }
+  },
+  methods: {
+    toArticleDetail(article) {
+      localStorage.setItem("articleCache", JSON.stringify(article));
+      router.push(`/article/${article.articleId}`);
+    }
   }
 }
 </script>
@@ -295,6 +386,7 @@ export default {
 .main-content {
   width: auto;
   padding: 10px;
+  min-height: 80vh;
 }
 
 /* 文章容器 */
@@ -348,6 +440,7 @@ export default {
 .article-list-item-card {
   float: right;
   width: auto;
+  min-width: 950px;
   height: 300px;
   margin-top: 10px;
   margin-bottom: 16px;
@@ -436,7 +529,10 @@ export default {
 /* 右侧浮动栏*/
 .main-right-content {
   width: 300px;
-  height: 200px;
+  height: auto;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 50px;
   border-radius: inherit;
   margin: 15px 10px;
 }
@@ -446,6 +542,7 @@ export default {
   width: auto;
   height: auto;
   min-width: 240px;
+  min-height: 320px;
   margin-top: 10px;
   border-radius: 10px;
   padding: 24px;
@@ -506,6 +603,7 @@ export default {
 .tag-list {
   width: auto;
   height: auto;
+  min-height: 100px;
   border-radius: 10px;
   margin-top: 10px;
   padding: 24px;

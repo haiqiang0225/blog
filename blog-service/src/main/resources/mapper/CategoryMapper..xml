@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blog.seckill.cc.mapper.CategoryMapper">
+
+    <resultMap id="categoryMap" type="blog.seckill.cc.entity.Category">
+        <id column="category_id" property="categoryId"/>
+        <result column="name" property="name"/>
+        <result column="alias" property="alias"/>
+        <result column="description" property="description"/>
+        <result column="parent_id" property="parent_id"/>
+    </resultMap>
+
+    <select id="queryCategoryByArticleId" parameterType="Long" resultMap="categoryMap">
+        SELECT tb_category.*
+        FROM tb_category,
+             tb_article_category
+        WHERE tb_article_category.article_id = #{articleId}
+          and tb_article_category.category_id = tb_category.category_id;
+    </select>
+</mapper>

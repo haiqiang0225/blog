@@ -1,14 +1,14 @@
 <template>
   <CommonBanner :backgroundImageUrl="pic"></CommonBanner>
   <div class="main-content">
-    <div class="tags-container content-glass">
+    <div class="tag-container content-glass">
       <h1>标签</h1>
 
       <router-link
           to="#"
           class="tag-item"
           :style="{color: colorList[(index + randomSeed) % colorList.length]}"
-          v-for="(item, index) in tags"
+          v-for="(item, index) in tag"
           :key="index"
       >
 
@@ -29,7 +29,7 @@ export default {
   setup() {
     //todo: 后端
     const pic = require('@/assets/image/index-main.jpg');
-    const tags = [{id: 0, title: 'Java'}, {id: 1, title: 'MySQL'}, {id: 2, title: 'Vue'}];
+    const tag = [{id: 0, title: 'Java'}, {id: 1, title: 'MySQL'}, {id: 2, title: 'Vue'}];
 
 
     // 默认有的颜色,减少随机生成深色颜色的调用次数
@@ -59,14 +59,14 @@ export default {
       colorList.push(randomColor(colorList));
     }
 
-    return {pic, tags, colorList, randomSeed};
+    return {pic, tag, colorList, randomSeed};
   },
 }
 </script>
 
 <style scoped>
 
-.tags-container {
+.tag-container {
   position: relative;
   padding: 10px;
   width: 100%;
@@ -76,13 +76,13 @@ export default {
 }
 
 
-.tags-container::after {
+.tag-container::after {
   content: '';
   height: 64px;
   clear: both;
 }
 
-.tags-container h1 {
+.tag-container h1 {
   float: top;
   font-size: 2rem;
   top: 26px;

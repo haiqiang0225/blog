@@ -253,7 +253,7 @@ pnpm-debug.log*
 # User
 *.yaml
 *.yml
-DoNotUseGit.java
+DoNotUseGit*
 PassKeyGen.java
 *.conf
 

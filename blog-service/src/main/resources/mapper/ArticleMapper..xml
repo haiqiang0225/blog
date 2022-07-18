@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blog.seckill.cc.mapper.ArticleMapper">
+
+    <resultMap id="article" type="blog.seckill.cc.entity.Article">
+        <!--  Article的映射  -->
+        <id column="article_id" property="articleId"/>
+        <result column="user_id" property="userId"/>
+        <result column="title" property="title"/>
+        <result column="abstract_title" property="abstractTitle"/>
+        <result column="view_count" property="viewCount"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="top_flag" property="topFlag"/>
+        <result column="article_detail_id" property="articleDetailId"/>
+        <result column="article_image_url" property="articleImageUrl"/>
+
+        <!-- category的映射 -->
+        <association property="category" javaType="blog.seckill.cc.entity.Category">
+            <id column="category_id" property="categoryId"/>
+            <result column="category_name" property="name"/>
+            <result column="category_alias" property="alias"/>
+            <result column="category_description" property="description"/>
+            <result column="category_parent_id" property="parentId"/>
+        </association>
+        <!-- tags的映射 -->
+        <collection property="tags" ofType="blog.seckill.cc.entity.Tag">
+            <id column="tag_id" property="tagId"/>
+            <result column="tag_name" property="name"/>
+            <result column="tag_alias" property="alias"/>
+            <result column="tag_description" property="description"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectArticlesWithCategoryAndTags" resultMap="article">
+
+        SELECT tb_article.*,
+        tb_tags.tag_id,
+        tb_tags.name as tag_name,
+        tb_tags.alias as tag_alias,
+        tb_tags.description as tag_tag_description,
+        tb_category.category_id,
+        tb_category.name as category_name,
+        tb_category.alias as category_alias,
+        tb_category.description as category_description,
+        tb_category.parent_id as category_parent_id
+
+        FROM tb_article
+
+        LEFT JOIN tb_article_category on tb_article.article_id = tb_article_category.article_id
+        LEFT JOIN tb_article_tags on tb_article.article_id = tb_article_tags.article_id
+        LEFT JOIN tb_category on tb_category.category_id = tb_article_category.category_id
+        LEFT JOIN tb_tags on tb_tags.tag_id = tb_article_tags.tag_id
+
+        <if test="queryTop == false">
+            WHERE top_flag != 1
+        </if>
+
+        ORDER BY top_flag DESC, create_date DESC
+        LIMIT #{start}, #{count};
+
+    </select>
+</mapper>

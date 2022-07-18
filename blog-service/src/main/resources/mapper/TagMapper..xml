@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blog.seckill.cc.mapper.TagMapper">
+    <resultMap id="tagMap" type="blog.seckill.cc.entity.Tag">
+        <id column="tag_id" property="tagId"/>
+        <result column="name" property="name"/>
+        <result column="alias" property="alias"/>
+        <result column="description" property="description"/>
+    </resultMap>
+
+    <select id="queryTagsByArticleId" resultMap="tagMap" parameterType="Long">
+        SELECT tb_tags.*
+        FROM tb_tags,
+             tb_article_tags
+        WHERE tb_article_tags.article_id = #{articleId}
+          and tb_article_tags.tag_id = tb_tags.tag_id;
+    </select>
+</mapper>

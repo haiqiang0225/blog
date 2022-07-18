@@ -1,4 +1,4 @@
-package blog.seckill.cc.entity;
+package blog.seckill.cc.domain;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ public class Result extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
     public Result() {
-        put("code", 0);
+        put("code", 200);
     }
 
     public static Result error() {
@@ -34,6 +34,7 @@ public class Result extends HashMap<String, Object> {
 
     public static Result error(Object msg) {
         Result r = new Result();
+        r.put("code", 500);
         r.put("msg", msg);
         return r;
     }
@@ -41,6 +42,12 @@ public class Result extends HashMap<String, Object> {
     public static Result ok(Object msg) {
         Result r = new Result();
         r.put("msg", msg);
+        return r;
+    }
+
+    public static Result data(Object data) {
+        Result r = new Result();
+        r.put("data", data);
         return r;
     }
 

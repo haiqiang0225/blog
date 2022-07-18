@@ -119,6 +119,14 @@ body {
   overflow-x: hidden !important;
 }
 
+.el-loading-mask {
+  border-radius: 16px;
+}
+
+.el-scrollbar {
+  --el-scrollbar-opacity: 0.37;
+}
+
 /* 隐藏element ui滚动栏x轴滚动轴 */
 .is-horizontal {
   display: none !important;
@@ -130,7 +138,7 @@ body {
 
 /* 主容器样式 */
 .main-content {
-  width: 900px;
+  width: 960px;
   display: flex;
   padding: 0;
 
@@ -317,5 +325,13 @@ body {
   background-color: rgba(255, 255, 255, 0.75);
   -webkit-backdrop-filter: saturate(150%) blur(8px);
   backdrop-filter: saturate(150%) blur(8px);
+}
+
+.float-right {
+  float: right;
+}
+
+.float-left {
+  float: left;
 }
 </style>
