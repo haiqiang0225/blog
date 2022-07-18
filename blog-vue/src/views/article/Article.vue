@@ -443,7 +443,6 @@ export default {
           if (replyComments.value[parentId]) {
             replyComments.value[parentId].push(v);
           } else {
-            console.log(parentId)
           }
         }
       });
@@ -515,7 +514,6 @@ export default {
       data.set("content", this.userComment);
       data.set("articleId", this.article.articleId);
       if (this.replyParentId !== undefined) {
-        console.log(this.replyParentId)
         data.set("parentId", this.replyParentId);
       } else {
         data.set("parentId", -1);
@@ -551,7 +549,6 @@ export default {
       ElMessage("暂不支持Emoji表情😂");
     },
     doReply(userId, rootCommentId, parentId) {
-      console.log(parentId)
       this.replyRootCommentId = rootCommentId;
       this.replyUserId = userId;
       this.replyParentId = parentId;

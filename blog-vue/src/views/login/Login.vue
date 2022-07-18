@@ -167,9 +167,9 @@ export default {
   components: {CommonHello,},
   setup() {
     const alreadyLogin = localStorage.getItem("token") !== null;
-    if (alreadyLogin) {
-      ElMessage.success("您已经登录了");
-    }
+    // if (alreadyLogin) {
+    //   ElMessage.success("您已经登录了");
+    // }
 
     const isShowLogin = ref(true);
     // 头像
@@ -201,8 +201,6 @@ export default {
       }
     },
     handleAvatarSuccess(res, file) {
-      // 修改头像显示内存中的头像
-      this.avatarURL = URL.createObjectURL(file);
       ElMessage({
         message: '上传头像成功',
         type: 'success'
@@ -216,17 +214,11 @@ export default {
     },
     upLoad(data) {
       // 上传头像
-      const formData = new FormData();
-      formData.append('file', data.file)
-      const res = axios.post('http://localhost:8080/proxy/upload', formData)
-          .then(response => {
-            // 成功回调
-            this.handleAvatarSuccess(res, data.file);
-          })
-          .catch(error => {
-            // 失败回调
-            this.handleAvatarFail(res);
-          });
+      this.avatarURL = URL.createObjectURL(data.file);
+      if (this.avatarURL) {
+        this.handleAvatarSuccess(null, null);
+      }
+
     },
     sendVerifyCode() {
       ElMessage.error('暂未支持');
@@ -257,7 +249,18 @@ export default {
           });
     },
     doRegister() {
-
+      // 注册成功后才能真正上传头像
+      const formData = new FormData();
+      formData.append('file', data.file)
+      const res = axios.post('http://localhost:8080/api/file/upload', formData)
+          .then(response => {
+            // 成功回调
+            this.handleAvatarSuccess(res, data.file);
+          })
+          .catch(error => {
+            // 失败回调
+            this.handleAvatarFail(res);
+          });
     },
   }
 }
@@ -275,7 +278,7 @@ export default {
   position: absolute;
   width: 760px;
   max-height: 35vh;
-  min-height: 400px;
+  min-height: 450px;
   min-width: 600px;
   top: 13vh;
   /*overflow: hidden;*/

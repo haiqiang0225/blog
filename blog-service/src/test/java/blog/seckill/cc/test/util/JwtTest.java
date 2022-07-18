@@ -7,6 +7,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.impl.DefaultJwtBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+
 /**
  * description: JwtTest <br>
  * date: 2022/7/16 19:57 <br>
@@ -17,7 +19,10 @@ public class JwtTest {
 
 
     @Test
-    public void testJwt() {
+    public void testJwt() throws Exception {
+        Field declaredField = JwtUtil.class.getDeclaredField("JWT_SECURITY_KEY");
+        declaredField.setAccessible(true);
+        System.out.println(declaredField.get(null));
         String jwt = JwtUtil.createJWT("123", "enen");
         System.out.println(jwt);
         Claims claims = JwtUtil.parseJWT(jwt);

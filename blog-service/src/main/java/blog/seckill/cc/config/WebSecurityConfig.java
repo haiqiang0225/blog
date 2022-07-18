@@ -60,6 +60,7 @@ public class WebSecurityConfig {
                                 .antMatchers("/user/login").anonymous()
                                 .antMatchers("/article/**").permitAll()
                                 .antMatchers("/index/**").permitAll()
+//                                .antMatchers("/comment/**").authenticated()
                                 // 其他地址的访问均需验证权限
                                 .anyRequest().authenticated()
                 )

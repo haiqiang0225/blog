@@ -25,8 +25,7 @@ public class JwtUtil {
     private static final long DEFAULT_EXPIRE_TIME = 1000 * 60 * 60 * 24;
 
     static {
-//        JWT_SECURITY_KEY = System.getenv("jwt_security_key");
-        JWT_SECURITY_KEY = "wfcofV15iprx19os";
+        JWT_SECURITY_KEY = System.getenv("jwt_security_key");
         if (JWT_SECURITY_KEY == null) {
             throw new RuntimeException("jwt的密钥不能为空!");
         }
