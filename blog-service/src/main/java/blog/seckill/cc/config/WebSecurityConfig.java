@@ -4,6 +4,7 @@ import blog.seckill.cc.filter.JwtAuthenticationTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 
 /**
  * description: WebSecurityConfig <br>
@@ -62,10 +64,12 @@ public class WebSecurityConfig {
                                 .antMatchers("/index/**").permitAll()
                                 .antMatchers("/category/**").permitAll()
                                 .antMatchers("/tag/**").permitAll()
+                                .antMatchers("/hello/**").permitAll()
 //                                .antMatchers("/comment/**").authenticated()
                                 // 其他地址的访问均需验证权限
                                 .anyRequest().authenticated()
                 )
+                .cors(Customizer.withDefaults())
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
         // 添加 JWT 过滤器，JWT 过滤器在用户名密码认证过滤器之前
@@ -77,14 +81,18 @@ public class WebSecurityConfig {
 
     /**
      * 配置跨源访问(CORS)
-     * 前端配置代理服务器了,所以这里其实无所谓
      *
      * @return
      */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "https://seckill.cc",
+                "https://blog.seckill.cc"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 

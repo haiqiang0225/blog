@@ -62,9 +62,11 @@ public class IndexController {
         Cookie[] cookies = request.getCookies();
         // 是否6个小时内访问过
         boolean visited = false;
-        for (Cookie cookie : cookies) {
-            if ("visited".equals(cookie.getName())) {
-                visited = true;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie != null && "visited".equals(cookie.getName())) {
+                    visited = true;
+                }
             }
         }
         // 说明6个小时内没有访问过

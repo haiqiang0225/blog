@@ -68,8 +68,8 @@ export default {
         }
       }, 100);
     }
-
-    axios.get("/hitokoto", {
+    let url = process.env.VUE_APP_HITOKOTO
+    axios.get(url, {
       timeout: 1500,
     })
         .then(res => {
