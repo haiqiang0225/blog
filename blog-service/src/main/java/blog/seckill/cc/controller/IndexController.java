@@ -106,11 +106,6 @@ public class IndexController {
         result.put("lookRandoms", lookRandoms);
         result.put("data", articles);
         result.put("articleListVersion", articleListVersion);
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return result;
     }
 

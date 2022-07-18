@@ -56,11 +56,6 @@ public class ArticleController {
             result.put("count", total);
         }
         result.put("data", articles);
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return result;
     }
 
