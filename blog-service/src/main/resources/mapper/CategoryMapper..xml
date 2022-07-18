@@ -20,4 +20,11 @@
         WHERE tb_article_category.article_id = #{articleId}
           and tb_article_category.category_id = tb_category.category_id;
     </select>
+
+
+    <select id="queryArticleCountThisCategory" parameterType="Long" resultType="Long">
+        SELECT count(1)
+        FROM tb_article_category
+        WHERE category_id = #{categoryId}
+    </select>
 </mapper>

@@ -23,6 +23,7 @@
             circle
             class="ref-item"
             type="info"
+            @click="openUrl(`https://github.com/haiqiang0225`)"
         >
           <font-awesome-icon icon="fa-brands fa-github"/>
         </el-button>
@@ -30,7 +31,7 @@
         <!--    weixin    -->
         <el-button
             circle
-            class="ref-item"
+            class="ref-item wechat-button"
             type="success"
         >
           <font-awesome-icon icon="fa-brands fa-weixin"/>
@@ -41,13 +42,20 @@
             circle
             class="ref-item"
             type="primary"
+            @click="openUrl(`http://wpa.qq.com/msgrd?v=3&uin=540911185&site=qq&menu=yes`)"
         >
           <font-awesome-icon icon="fa-brands fa-qq"/>
         </el-button>
 
-
+        <div class="show-wechat">
+          <el-image
+              :src="`https://haiqiang-picture.oss-cn-beijing.aliyuncs.com/blog/wechat.JPG`"
+              :fit="fit"></el-image>
+        </div>
       </div>
     </div>
+
+
   </div>
 </template>
 
@@ -64,15 +72,23 @@ export default {
 
     const userInfo = [
       '姓名: JHQ',
-      '技能: Java, Vue, MySQL, OS',
-      '<h1 style="color: red;"> 这是一个h1标签 </h1>',
+      '<h1 style="color: #23a6d5;">技能: Java, Vue, MySQL, ... </h1>',
     ];
     return {backgroundImg, userInfo, avatarIMG};
+  },
+  methods: {
+    openUrl(url) {
+      window.open(url);
+    }
   }
 }
 </script>
 
 <style scoped>
+
+.main-content {
+  min-height: 640px;
+}
 
 .about-me-container {
   width: 100%;
@@ -125,5 +141,20 @@ export default {
   font-size: 1.5rem;
   width: auto;
   height: auto;
+}
+
+.wechat-button:hover ~ .show-wechat {
+  display: block;
+}
+
+.show-wechat {
+  position: absolute;
+  top: 50px;
+  width: 200px;
+  border: 1px solid black;
+  border-radius: 5px;
+  display: none;
+  box-shadow: 0 0 10px 0 black;
+  z-index: 9999;
 }
 </style>

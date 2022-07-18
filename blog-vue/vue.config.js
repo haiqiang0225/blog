@@ -16,15 +16,22 @@ module.exports = defineConfig({
                 changeOrigin: true,
                 pathRewrite: {'^/proxy': ''},
             },
-            'backend': {
+            '/backend': {
                 target: process.env.VUE_APP_BACKEND_TARGET_BASEURL,
                 changeOrigin: true,
                 pathRewrite: {'^/backend': ''},
             },
-            'api': {
+            '/api': {
                 target: process.env.VUE_APP_BACKEND_TARGET_BASEURL,
                 changeOrigin: true,
                 pathRewrite: {'^/api': ''},
+            },
+            // 一言api跨域配置
+            '/hitokoto': {
+                target: 'https://v1.hitokoto.cn/?c=i',
+                secure: true,
+                changeOrigin: true,
+                pathRewrite: {'^/hitokoto': ''},
             }
         }
     },

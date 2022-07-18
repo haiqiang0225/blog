@@ -7,7 +7,7 @@
     <div class="banner-container">
       <div class="hello-img"></div>
       <h1>JHQ的博客</h1>
-      <h2>{{ `动态标语🌶` }} &nbsp;<transition-group
+      <h2>{{ bannerText }} &nbsp;<transition-group
           appear
           name="animate__animated "
           enter-active-class="show-cursor"
@@ -35,6 +35,7 @@
 
 import {reactive, ref} from "vue";
 import {useStore} from "vuex"
+import axios from "@/utils/axios";
 
 
 export default {
@@ -56,6 +57,44 @@ export default {
       showCursorAnimation.value = !showCursorAnimation.value;
     }, 1000);
 
+    const bannerText = ref('');
+
+    let intervalText = function (text) {
+      let i = 0;
+      let textInterval = setInterval(() => {
+        bannerText.value = text.substring(0, ++i);
+        if (i === text.length) {
+          clearInterval(textInterval);
+        }
+      }, 100);
+    }
+
+    axios.get("/hitokoto", {
+      timeout: 1500,
+    })
+        .then(res => {
+          intervalText(res.data.hitokoto);
+        })
+        .catch(err => {
+          // 备用
+          let t = [
+            "彼岸花花开彼岸，断肠草草断肝肠。",
+            "独学而无友，则孤陋而寡闻。",
+            "万钟一品不足论，时来出手苏元元。",
+            "人生最大的喜悦是每个人都说你做不到，你却完成它了!",
+            "过去属于死神，未来属于你自己。",
+            "永远都要记住你的人生掌握在你手中",
+            "人生中出现的一切，都无法拥有，只能经历。",
+            "不要慨叹生活底痛苦！---慨叹是弱者……",
+            "宿命论是那些缺乏意志力的弱者的借口。",
+            "简单的做人，不沉迷于幻想。",
+            "人生最大遗憾莫过于错误坚持和轻易放弃",
+            "千里之行，始于足下"
+          ];
+          intervalText(t[Math.floor(Math.random() * t.length)])
+          // console.log(err)
+        });
+
 
     // 从主页面移动到内容区的方法
     let scrollToInfo = function () {
@@ -64,7 +103,7 @@ export default {
         behavior: "smooth",
       });
     };
-    return {showInfoAnimation, scrollToInfo, showCursorAnimation, globalScrollBar};
+    return {showInfoAnimation, scrollToInfo, showCursorAnimation, globalScrollBar, bannerText};
   }
 }
 </script>
