@@ -32,5 +32,6 @@
         SELECT tb_comment.*, tb_user.user_name, tb_user.user_nickname, tb_user.user_profile_photo_path
         FROM tb_comment
                  LEFT JOIN tb_user on tb_comment.user_id = tb_user.user_id
+        WHERE article_id = #{articleId}
     </select>
 </mapper>

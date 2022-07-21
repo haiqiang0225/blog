@@ -43,8 +43,9 @@ public class ArticleMapperTest extends TestBase {
 
     @Test
     public void testSelectArticlesWithCategoryAndTags() {
-        List<Article> articles = articleMapper.selectArticlesWithCategoryAndTags(0, 15, false);
-        System.out.println(articles);
+        List<Article> articles = articleMapper.selectArticlesWithCategoryAndTags(0, 10, true);
+        System.out.println(">>>>>>>>>>>" + articles);
+        System.out.println(">>>>>>>>>>>" + articles.size());
     }
 
     //    @Test

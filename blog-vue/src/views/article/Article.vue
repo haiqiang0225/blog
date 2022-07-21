@@ -7,7 +7,7 @@
 
       <!--  标题    -->
       <div class="article-title">
-        <span>{{ article.title }}</span>
+        {{ article.title }}
       </div>
 
       <div class="article-info-wrap">
@@ -507,9 +507,12 @@ export default {
       let url = "/api/comment/upload";
       let data = new FormData();
       let curUser = JSON.parse(localStorage.getItem("curUser"));
-      let userId = curUser.userId;
-      if (userId !== undefined) {
-        data.set("userId", userId);
+      // 设置userId (如果有)
+      if (curUser) {
+        let userId = curUser.userId;
+        if (userId !== undefined) {
+          data.set("userId", userId);
+        }
       }
       data.set("content", this.userComment);
       data.set("articleId", this.article.articleId);
@@ -599,6 +602,12 @@ export default {
   text-align: center;
   color: white;
   font-size: 2.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
 }
 
 .article-info-wrap {

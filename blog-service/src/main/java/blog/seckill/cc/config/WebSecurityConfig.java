@@ -65,7 +65,7 @@ public class WebSecurityConfig {
                                 .antMatchers("/category/**").permitAll()
                                 .antMatchers("/tag/**").permitAll()
                                 .antMatchers("/hello/**").permitAll()
-//                                .antMatchers("/comment/**").authenticated()
+                                .antMatchers("/comment/**").authenticated()
                                 // 其他地址的访问均需验证权限
                                 .anyRequest().authenticated()
                 )

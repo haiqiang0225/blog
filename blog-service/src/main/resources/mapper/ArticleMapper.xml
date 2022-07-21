@@ -44,13 +44,20 @@
         tb_tags.name as tag_name,
         tb_tags.alias as tag_alias,
         tb_tags.description as tag_tag_description,
+
         tb_category.category_id,
         tb_category.name as category_name,
         tb_category.alias as category_alias,
         tb_category.description as category_description,
         tb_category.parent_id as category_parent_id
 
+        FROM (
+
+        SELECT *
         FROM tb_article
+        LIMIT #{start}, #{count}
+
+        ) as tb_article
 
         LEFT JOIN tb_article_category on tb_article.article_id = tb_article_category.article_id
         LEFT JOIN tb_article_tags on tb_article.article_id = tb_article_tags.article_id
@@ -61,8 +68,8 @@
             WHERE top_flag != 1
         </if>
 
-        ORDER BY top_flag DESC, create_date DESC
-        LIMIT #{start}, #{count};
+        ORDER BY top_flag DESC, create_date DESC;
+
 
     </select>
 </mapper>

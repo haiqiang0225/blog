@@ -97,7 +97,7 @@ export default {
   left: 0;
   right: 0;
   margin: auto auto;
-  transform: translateY(50%);
+  /*transform: translateY(0%);*/
 }
 
 </style>

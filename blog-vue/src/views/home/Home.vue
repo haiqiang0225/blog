@@ -105,6 +105,14 @@
             <font-awesome-icon icon="fa-magnifying-glass"/>
             随便看看
           </span>
+          <div style="display: inline-block; float: right">
+            <div class="circle" style="background-color: red; margin-left: 5px;">
+            </div>
+            <div class="circle" style="background-color: green; margin-left: 5px;">
+            </div>
+            <div class="circle" style="background-color: blue; margin-left: 5px;">
+            </div>
+          </div>
         </div>
 
         <!--    随便看看item    -->
@@ -112,9 +120,9 @@
              v-for="(item, index) in lookRandoms"
              :key="index"
         >
-          <router-link
-              :to="`/article/` + item.id"
-              style="height: 100%"
+          <a
+              @click="toArticleDetail(item)"
+              style="height: 100%; cursor: pointer;"
           >
             <!--      封面图      -->
             <div class="look-random-image-wrap">
@@ -139,7 +147,7 @@
               {{ item.title }}
             </div>
 
-          </router-link>
+          </a>
         </div>
       </div>
 
@@ -150,11 +158,19 @@
             <font-awesome-icon icon="fa-tag"/>
             标签列表
           </span>
+          <div style="display: inline-block; float: right">
+            <div class="circle" style="background-color: red; margin-left: 5px;">
+            </div>
+            <div class="circle" style="background-color: green; margin-left: 5px;">
+            </div>
+            <div class="circle" style="background-color: blue; margin-left: 5px;">
+            </div>
+          </div>
         </div>
 
         <!--  标签item  -->
         <div
-            v-for="(item, index) in tag"
+            v-for="(item, index) in tags"
             :key="index"
         >
           <router-link
@@ -174,6 +190,14 @@
         <div class="mac-top-button-right">
           <font-awesome-icon icon="fa-bar-chart"/>
           <span> &nbsp;&nbsp;网站统计信息</span>
+          <div style="display: inline-block; float: right">
+            <div class="circle" style="background-color: red; margin-left: 5px;">
+            </div>
+            <div class="circle" style="background-color: green; margin-left: 5px;">
+            </div>
+            <div class="circle" style="background-color: blue; margin-left: 5px;">
+            </div>
+          </div>
         </div>
 
         <div style="margin-top: 30px;line-height: 15px;">
@@ -249,6 +273,12 @@ export default {
       tags.value = response.data.tags;
       totalVisitCount.value = response.data.totalVisitCount;
 
+      // dev:
+      if (process.env.NODE_ENV === "development") {
+        console.log(articleList.value.length)
+        console.log(articleList.value)
+      }
+
       // 存储到本地
       localStorage.setItem("articleListVersion", response.data.articleListVersion);
       localStorage.setItem("articleList", JSON.stringify(articleList.value));
@@ -277,6 +307,11 @@ export default {
         return;
       }
       loading.value = true;
+
+      //dev:
+      if (process.env.NODE_ENV === "development") {
+        console.log(articleList.value.length)
+      }
       let url = "/api/article/get?start=" + articleList.value.length + "&count=5&total=" + totalCount.value;
       let promise = axios.get(url);
       promise
@@ -352,7 +387,7 @@ export default {
       articleList,
       webRunTime,
       lookRandoms,
-      tag: tags,
+      tags,
       loading,
       disabledInfiniteLoading,
       colorList,
@@ -652,15 +687,21 @@ export default {
 }
 
 /* mac按钮样式 */
-.mac-top-button-right:after {
-  content: '● ● ●';
-  font-size: 1.2rem;
-  float: right;
+/*.mac-top-button-right:after {*/
+/*  content: '● ● ●';*/
+/*  font-size: 1.2rem;*/
+/*  float: right;*/
 
-  background: linear-gradient(to right, red, red, green, green, blue, blue);
-  -webkit-background-clip: text;
-  color: transparent;
+/*  background: linear-gradient(to right, red, red, green, green, blue, blue);*/
+/*  -webkit-background-clip: text;*/
+/*  color: transparent;*/
+/*}*/
+
+.circle {
+  border-radius: 50%;
+  height: 10px;
+  width: 10px;
+  display: inline-block;
 }
-
 
 </style>
