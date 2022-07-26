@@ -70,7 +70,8 @@ export default {
     }
     let url = process.env.VUE_APP_HITOKOTO
     axios.get(url, {
-      timeout: 1500,
+      timeout: 1800,
+      baseURL: process.env.VUE_APP_HITOKOTO_BASE_URL,
     })
         .then(res => {
           intervalText(res.data.hitokoto);

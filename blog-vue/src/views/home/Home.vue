@@ -24,7 +24,6 @@
               :class="index % 2 === 0? `image-float-left`: `image-float-right` "
               :src="article.articleImageUrl"
               :fit="`fill`"
-
           >
             <template #error>
               <div class="image-slot">
@@ -370,7 +369,6 @@ export default {
     };
 
     onMounted(() => {
-
       timeInterval = setInterval(() => {
         dateDiff += 1000;
         webRunTime.value = msToFormatDate(dateDiff);
@@ -409,7 +407,7 @@ export default {
   },
   methods: {
     toArticleDetail(article) {
-      localStorage.setItem("articleCache", JSON.stringify(article));
+      localStorage.setItem("articleCache" + article.articleId, JSON.stringify(article));
       router.push(`/article/${article.articleId}`);
     }
   }
@@ -489,8 +487,12 @@ export default {
 /* 文章标题样式 */
 .title {
   line-height: 1.8;
-  font-size: 24px;
+  font-size: 22px;
   margin: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .title a {
@@ -668,7 +670,10 @@ export default {
   opacity: .8;
   margin: 0 1% 10px 1%;
   float: left;
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
+
 }
 
 

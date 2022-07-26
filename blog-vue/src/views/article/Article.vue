@@ -326,8 +326,8 @@ export default {
     const store = useStore();
     // 获取全局的滚动条
     const globalScrollBar = store.state.globalScrollBar;
-    const backgroundImg = require("@/assets/image/index-main.jpg");
     const article_id = route.params.id;
+
 
     // 确保切换过来后,滚动条的位置初始化
     globalScrollBar.scrollTo(0, 0);
@@ -339,7 +339,8 @@ export default {
 
     // 显示相关
     const articleDetail = ref({});
-    const article = ref({});
+    const article = ref(JSON.parse(localStorage.getItem("articleCache" + article_id)));
+    let backgroundImg = ref(article.value.articleImageUrl);
     let comments = ref();
     const placeHolder = ref("请输入评论...");
     // 存放所有顶级/根评论
@@ -367,7 +368,6 @@ export default {
 
     // ===== 具体逻辑 =====
     let load = async function () {
-      article.value = await JSON.parse(localStorage.getItem("articleCache"));
       // 本地缓存中不存在
       let url = "/api/article/getDetails?articleId=" + article_id;
       if (!article.value || article.value.articleId !== article_id) {
@@ -403,6 +403,7 @@ export default {
       // 本地缓存中不存在
       if (!article.value || article.value.articleId !== article_id) {
         article.value = response.data.article;
+        backgroundImg.value = article.value.articleImageUrl;
       }
       articleDetail.value = response.data.articleDetail;
       comments.value = response.data.comments;
@@ -741,6 +742,9 @@ export default {
 .right-nav-container {
   min-width: 400px;
   min-height: 500px;
+  max-width: 500px;
+  text-overflow: ellipsis;
+  overflow: hidden;
   border-radius: 16px;
   background-color: white;
   position: sticky;
