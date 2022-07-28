@@ -1,5 +1,6 @@
 package blog.seckill.cc.controller;
 
+import blog.seckill.cc.annotation.RequestLimit;
 import blog.seckill.cc.entity.Article;
 import blog.seckill.cc.domain.Result;
 import blog.seckill.cc.entity.Summary;
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/index")
 @Slf4j
+@RequestLimit
 public class IndexController {
 
     @Resource

@@ -1,5 +1,6 @@
 package blog.seckill.cc.controller;
 
+import blog.seckill.cc.annotation.RequestLimit;
 import blog.seckill.cc.domain.Result;
 import blog.seckill.cc.entity.Tag;
 import blog.seckill.cc.service.TagService;
@@ -18,6 +19,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/tag")
+@RequestLimit
 public class TagController {
 
     @Resource

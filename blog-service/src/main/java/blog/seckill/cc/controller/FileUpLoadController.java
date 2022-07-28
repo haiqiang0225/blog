@@ -1,5 +1,6 @@
 package blog.seckill.cc.controller;
 
+import blog.seckill.cc.annotation.RequestLimit;
 import blog.seckill.cc.domain.Result;
 import blog.seckill.cc.util.UploadUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/file")
+@RequestLimit
 public class FileUpLoadController {
 
     @Resource

@@ -1,5 +1,6 @@
 package blog.seckill.cc.controller;
 
+import blog.seckill.cc.annotation.RequestLimit;
 import blog.seckill.cc.domain.Result;
 import blog.seckill.cc.entity.*;
 import blog.seckill.cc.service.ArticleService;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping("/article")
+@RequestLimit
 public class ArticleController {
 
     @Resource

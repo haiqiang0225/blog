@@ -1,5 +1,6 @@
 package blog.seckill.cc.controller;
 
+import blog.seckill.cc.annotation.RequestLimit;
 import blog.seckill.cc.domain.Result;
 import blog.seckill.cc.entity.User;
 import blog.seckill.cc.service.LoginService;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
  * version: 1.0 <br>
  */
 @RestController
+@RequestLimit
 public class LoginController {
 
     @Resource

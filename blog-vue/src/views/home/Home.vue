@@ -258,6 +258,9 @@ export default {
     }
     let res = onFirstLoading();
     res.then(response => {
+      if (response.data.code === 403) {
+        alert(response.data.msg)
+      }
       if (response.data.articleListVersion === localStorage.getItem("articleListVersion")) {
         articleList.value = JSON.parse(localStorage.getItem("articleList"));
         totalCount.value = JSON.parse(localStorage.getItem("totalCount"));
