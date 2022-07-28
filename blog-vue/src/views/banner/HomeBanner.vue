@@ -6,7 +6,7 @@
   >
     <div class="banner-container">
       <div class="hello-img"></div>
-      <h1>JHQ的博客</h1>
+      <h1>JHQ的个人网站</h1>
       <h2>{{ bannerText }} &nbsp;<transition-group
           appear
           name="animate__animated "

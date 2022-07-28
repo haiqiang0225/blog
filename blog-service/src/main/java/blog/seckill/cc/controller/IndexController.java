@@ -7,6 +7,7 @@ import blog.seckill.cc.entity.Tag;
 import blog.seckill.cc.service.ArticleService;
 import blog.seckill.cc.service.IndexService;
 import blog.seckill.cc.service.TagService;
+import blog.seckill.cc.util.IpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,7 +75,7 @@ public class IndexController {
         if (!visited) {
             Summary summary = new Summary();
             summary.setVisitDate(new Date());
-            summary.setIp(getIpAddr(request));
+            summary.setIp(IpUtil.getClientIpAddress(request));
             totalVisitCount = indexService.addTotalVisitCount(summary);
         } else {
             totalVisitCount = indexService.getTotalVisitCount();
@@ -109,32 +110,5 @@ public class IndexController {
         return result;
     }
 
-
-    /**
-     * 获取真实ip地址
-     *
-     * @param request HttpServletRequest
-     * @return ip地址
-     */
-    public String getIpAddr(HttpServletRequest request) {
-        //目前则是网关ip
-        String ip = request.getHeader("X-Real-IP");
-        if (ip != null && !"".equals(ip) && !"unknown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-        ip = request.getHeader("X-Forwarded-For");
-        if (ip != null && !"".equals(ip) && !"unknown".equalsIgnoreCase(ip)) {
-            int index = ip.indexOf(',');
-            if (index != -1) {
-                //只获取第一个值
-                return ip.substring(0, index);
-            } else {
-                return ip;
-            }
-        } else {
-            //取不到真实ip则返回空，不能返回内网地址。
-            return "";
-        }
-    }
 
 }

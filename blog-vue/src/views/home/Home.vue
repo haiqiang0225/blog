@@ -369,6 +369,7 @@ export default {
     };
 
     onMounted(() => {
+      disabledInfiniteLoading.value = false;
       timeInterval = setInterval(() => {
         dateDiff += 1000;
         webRunTime.value = msToFormatDate(dateDiff);
