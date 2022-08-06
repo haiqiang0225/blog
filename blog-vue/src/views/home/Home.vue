@@ -260,20 +260,24 @@ export default {
     res.then(response => {
       if (response.data.code === 403) {
         alert(response.data.msg)
+        return;
       }
+      // 设置cookie标记
+      if (!JsCookie.get("visited")) {
+        JsCookie.set("visited", true, {expires: 0.12});
+      }
+      totalVisitCount.value = response.data.totalVisitCount;
       if (response.data.articleListVersion === localStorage.getItem("articleListVersion")) {
         articleList.value = JSON.parse(localStorage.getItem("articleList"));
         totalCount.value = JSON.parse(localStorage.getItem("totalCount"));
         lookRandoms.value = JSON.parse(localStorage.getItem("lookRandoms"));
         tags.value = JSON.parse(localStorage.getItem("tags"));
-        totalVisitCount.value = JSON.parse(localStorage.getItem("totalVisitCount"));
         return;
       }
       articleList.value = response.data.data;
       totalCount.value = response.data.count;
       lookRandoms.value = response.data.lookRandoms;
       tags.value = response.data.tags;
-      totalVisitCount.value = response.data.totalVisitCount;
 
       // dev:
       if (process.env.NODE_ENV === "development") {
@@ -287,10 +291,6 @@ export default {
       localStorage.setItem("totalCount", JSON.stringify(totalCount.value));
       localStorage.setItem("lookRandoms", JSON.stringify(lookRandoms.value));
       localStorage.setItem("tags", JSON.stringify(tags.value));
-      localStorage.setItem("totalVisitCount", JSON.stringify(totalVisitCount.value));
-      if (!JsCookie.get("visited")) {
-        JsCookie.set("visited", true, {expires: 0.5});
-      }
     }).catch(error => {
       loading.value = false;
     })

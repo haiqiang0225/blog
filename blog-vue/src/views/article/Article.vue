@@ -75,7 +75,7 @@
 
     </div>
     <!-- 右侧目录导航栏 -->
-    <div class="right-nav-container" v-loading="onInit">
+    <div class="right-nav-container">
       <article class="markdown-body">
         <span> 目录 </span>
         <p v-html="toc"></p>
@@ -586,9 +586,22 @@ export default {
   background-color: white;
   /* 屏幕宽度 100vw - 960 / 2 即居中*/
   left: calc((100vw - 960px) / 2);
-
 }
 
+@media screen and (max-width: 1500px) and (min-width: 1400px) {
+  .main-content {
+    width: 66vw;
+    left: 2vw;
+  }
+}
+
+@media screen and (max-width: 1399px) and (min-width: 0) {
+  .main-content {
+    width: 66vw;
+    min-width: 66vw;
+    left: 1vw;
+  }
+}
 
 .article-container {
   width: 960px;
@@ -739,21 +752,49 @@ export default {
 }
 
 /*右侧导航栏 */
-.right-nav-container {
-  min-width: 400px;
-  min-height: 500px;
-  max-width: 500px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  border-radius: 16px;
-  background-color: white;
-  position: sticky;
-  position: -webkit-sticky;
-  top: 70px;
-  right: 10vw;
-  float: right;
-  display: inline-block;
-  margin-top: 24px;
+@media screen and (min-width: 1501px) {
+  .right-nav-container {
+    min-width: 200px;
+    min-height: 300px;
+    max-width: 27vw;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    border-radius: 16px;
+    background-color: white;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 70px;
+    right: 2vw;
+    float: right;
+    display: inline-block;
+    margin-top: 24px;
+  }
+}
+
+
+@media screen and (max-width: 1500px) and (min-width: 1300px) {
+  .right-nav-container {
+    min-height: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    border-radius: 16px;
+    background-color: white;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 70px;
+    right: 1.5vw;
+    float: right;
+    display: inline-block;
+    margin-top: 24px;
+    min-width: 24vw;
+    max-width: 26vw;
+  }
+}
+
+@media screen and (max-width: 1299px) {
+  .right-nav-container {
+    display: none;
+  }
 }
 
 .root-comment-item {

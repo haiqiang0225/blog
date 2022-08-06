@@ -6,6 +6,8 @@
     <a href="https://cn.vuejs.org/">Vue3</a>
     &nbsp;
     <a href="https://spring.io/">Spring</a>
+      &nbsp;
+    <a href="https://beian.miit.gov.cn/#/Integrated/index">鲁ICP备2022025309号-1</a>
     &nbsp;
   </div>
 </template>

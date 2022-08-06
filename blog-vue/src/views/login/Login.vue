@@ -268,11 +268,22 @@ export default {
 
 <style scoped>
 
-
-.main-content-wrap {
-  position: relative;
-  min-height: calc(100vh - 20vh - 176px - 48px);
+@media screen and (max-height: 960px) and (min-height: 0){
+  .main-content-wrap {
+    position: relative;
+    min-height: calc(100vh - 20vh - 48px);
+    /*min-height: 45vh;*/
+  }
 }
+
+@media screen and (min-height: 961px){
+  .main-content-wrap {
+    position: relative;
+    min-height: calc(100vh - 20vh - 172px - 48px);
+    /*min-height: 45vh;*/
+  }
+}
+
 
 .main-content {
   position: absolute;

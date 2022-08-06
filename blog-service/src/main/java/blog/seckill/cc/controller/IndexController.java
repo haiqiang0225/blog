@@ -89,6 +89,7 @@ public class IndexController {
             log.info("文章列表未发生变化, 不再请求数据库,版本: {}", articleListVersion);
             Result ok = Result.ok();
             ok.put("articleListVersion", articleListVersion);
+            ok.put("totalVisitCount", totalVisitCount);
             return ok;
         }
         // 查询文章列表
