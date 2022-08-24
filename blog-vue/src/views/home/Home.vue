@@ -266,17 +266,20 @@ export default {
       if (!JsCookie.get("visited")) {
         JsCookie.set("visited", true, {expires: 0.12});
       }
+
+      // 无论如何,请求后端的数据
       totalVisitCount.value = response.data.totalVisitCount;
+      lookRandoms.value = response.data.lookRandoms;
+
+      // 缓存的数据
       if (response.data.articleListVersion === localStorage.getItem("articleListVersion")) {
         articleList.value = JSON.parse(localStorage.getItem("articleList"));
         totalCount.value = JSON.parse(localStorage.getItem("totalCount"));
-        lookRandoms.value = JSON.parse(localStorage.getItem("lookRandoms"));
         tags.value = JSON.parse(localStorage.getItem("tags"));
         return;
       }
       articleList.value = response.data.data;
       totalCount.value = response.data.count;
-      lookRandoms.value = response.data.lookRandoms;
       tags.value = response.data.tags;
 
       // dev:
@@ -289,7 +292,6 @@ export default {
       localStorage.setItem("articleListVersion", response.data.articleListVersion);
       localStorage.setItem("articleList", JSON.stringify(articleList.value));
       localStorage.setItem("totalCount", JSON.stringify(totalCount.value));
-      localStorage.setItem("lookRandoms", JSON.stringify(lookRandoms.value));
       localStorage.setItem("tags", JSON.stringify(tags.value));
     }).catch(error => {
       loading.value = false;
@@ -380,10 +382,15 @@ export default {
     });
 
     onUnmounted(() => {
-      //清除定时器
+      // 清除定时器
       timeInterval != null ? clearInterval(timeInterval) : null;
     })
 
+    // 如果是用小屏设备访问的,才显示提示信息
+    // todo: 适配后删除.
+    if (window.innerWidth < 1660 || window.innerHeight < 500) {
+      ElMessage("本站暂未对小屏设备和移动设备进行适配,建议使用大屏设备访问!");
+    }
 
     return {
       articleList,

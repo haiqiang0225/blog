@@ -83,6 +83,10 @@ public class IndexController {
             totalVisitCount = indexService.getTotalVisitCount();
         }
 
+        // 获取随便看看内容
+        List<Article> lookRandoms = articleService.queryRandomArticleList(randCount);
+
+
         // 文章列表没有变则不需要从数据库取
         String articleListVersion = "";
         if (version != null && version.equals(articleListVersion = indexService.getArticleListVersion())) {
@@ -90,6 +94,7 @@ public class IndexController {
             Result ok = Result.ok();
             ok.put("articleListVersion", articleListVersion);
             ok.put("totalVisitCount", totalVisitCount);
+            ok.put("lookRandoms", lookRandoms);
             return ok;
         }
         // 查询文章列表
@@ -101,7 +106,6 @@ public class IndexController {
         }
 
         // 随便看看
-        List<Article> lookRandoms = articleService.queryRandomArticleList(randCount);
         List<Tag> tags = tagService.queryAllTags();
 
         // 结果

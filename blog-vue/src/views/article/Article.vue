@@ -498,6 +498,8 @@ export default {
       this.globalScrollBar.scrollTo(0, elementById.offsetTop + document.documentElement.clientHeight * .35);
     },
     uploadComment(comment) {
+      // ElMessage.error("不支持评论");
+      // return;
       if (comment.replace(/(^\s*)|(\s*$)/g, "").length === 0) {
         ElMessage("没有有效输入");
         return;
@@ -537,7 +539,7 @@ export default {
             this.userComment = "";
             this.replyUserId = undefined;
             this.replyRootCommentId = undefined;
-            ElMessage.success("评论成功!");
+            ElMessage.success("评论会在审核后显示,请耐心等待!");
 
           })
           .catch(err => {

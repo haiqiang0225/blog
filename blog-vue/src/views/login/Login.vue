@@ -186,6 +186,7 @@ export default {
     const phone = ref('');
 
     const verifyCode = ref('');
+    ElMessage("暂不支持交互功能,敬请期待!");
     return {avatarURL, username, nickname, password, emailSelect, email, phone, verifyCode, isShowLogin};
   },
   methods: {
