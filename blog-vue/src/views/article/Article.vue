@@ -235,6 +235,7 @@ import highlightJs from "highlight.js";
 import "github-markdown-css";
 import 'highlight.js/styles/atom-one-dark.css'
 import {ElMessage} from "element-plus";
+import JsCookie from "js-cookie";
 
 export default {
   name: "Article",
@@ -466,6 +467,11 @@ export default {
 
       wordCount.value = calWordCount(html.value);
       timeUsed.value = `${Math.ceil(wordCount.value / 300)} 分钟`;
+
+      // 设置cookie标记
+      if (!JsCookie.get("visited" + article_id)) {
+        JsCookie.set("visited" + article_id, true, {expires: 0.12});
+      }
     }).catch(error => {
       ElMessage.error("出错了,请刷新试试");
       console.log(error)

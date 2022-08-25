@@ -6,12 +6,15 @@ import blog.seckill.cc.entity.*;
 import blog.seckill.cc.service.ArticleService;
 import blog.seckill.cc.service.CommentService;
 import blog.seckill.cc.service.TagService;
+import blog.seckill.cc.util.IpUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -64,10 +67,14 @@ public class ArticleController {
     @GetMapping("/getDetails")
     public Result getArticleDetails(
             @RequestParam("articleId") Long articleId,
-            @RequestParam(value = "queryArticle", defaultValue = "false") boolean query) {
+            @RequestParam(value = "queryArticle", defaultValue = "false") boolean query,
+            HttpServletRequest request) {
+        // 是否6个小时内访问过
+        boolean visited = IpUtil.containsCookie("visited" + articleId, request);
+
         // 查询文章相关信息
         Article article = articleService.getArticle(articleId);
-        ArticleDetail articleDetail = articleService.queryArticleDetail(articleId);
+        ArticleDetail articleDetail = articleService.queryArticleDetail(articleId, !visited);
         List<Tag> tags = tagService.queryArticleTags(articleId);
         List<Comment> comments = commentService.queryCommentsWithUserInfoByArticleId(articleId);
         article.setTags(tags);

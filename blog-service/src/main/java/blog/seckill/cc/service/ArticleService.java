@@ -51,6 +51,9 @@ public interface ArticleService {
      */
     ArticleDetail queryArticleDetail(Long articleDetailId);
 
+
+    ArticleDetail queryArticleDetail(Long articleDetailId, boolean addViewCount);
+
     /**
      * description: getArticle 获取文章摘要信息<br>
      * version: 1.0 <br>

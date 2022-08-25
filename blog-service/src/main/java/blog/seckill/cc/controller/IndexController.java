@@ -62,16 +62,7 @@ public class IndexController {
                               @RequestParam(value = "total", required = false, defaultValue = "0") Integer total,
                               @RequestParam(value = "version", required = false, defaultValue = "") String version,
                               HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        // 是否6个小时内访问过
-        boolean visited = false;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie != null && "visited".equals(cookie.getName())) {
-                    visited = true;
-                }
-            }
-        }
+        boolean visited = IpUtil.containsCookie("visited", request);
         // 说明6个小时内没有访问过
         int totalVisitCount = 0;
         if (!visited) {

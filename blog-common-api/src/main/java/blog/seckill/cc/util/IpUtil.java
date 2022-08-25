@@ -1,5 +1,6 @@
 package blog.seckill.cc.util;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -42,6 +43,23 @@ public class IpUtil {
             }
         }
         return request.getRemoteAddr();
+    }
+
+    public static boolean containsCookie(String key, HttpServletRequest request) {
+        if (key == null) {
+            return false;
+        }
+        Cookie[] cookies = request.getCookies();
+        // 是否6个小时内访问过
+        boolean c = false;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie != null && key.equals(cookie.getName())) {
+                    c = true;
+                }
+            }
+        }
+        return c;
     }
 
 }

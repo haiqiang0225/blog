@@ -70,6 +70,11 @@
 
         ORDER BY top_flag DESC, create_date DESC;
 
-
     </select>
+
+    <update id="addViewCount">
+        UPDATE tb_article
+        SET view_count = view_count + #{add}
+        WHERE article_id = #{articleId}
+    </update>
 </mapper>

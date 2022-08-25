@@ -48,6 +48,12 @@ public class ArticleMapperTest extends TestBase {
         System.out.println(">>>>>>>>>>>" + articles.size());
     }
 
+
+    @Test
+    public void testAddViewCount() {
+        articleMapper.addViewCount(4L, 10L);
+    }
+
     //    @Test
     public void insertArticleForTest() {
         Article article = new Article();
