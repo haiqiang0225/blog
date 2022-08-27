@@ -1,5 +1,6 @@
 package blog.seckill.cc.test.service;
 
+import blog.seckill.cc.entity.ArticleDetail;
 import blog.seckill.cc.test.TestBase;
 import blog.seckill.cc.BlogServiceMainApp;
 import blog.seckill.cc.entity.Article;
@@ -11,6 +12,7 @@ import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 /**
  * description: ArticleServiceTest <br>
@@ -49,6 +51,19 @@ public class ArticleServiceTest extends TestBase {
         List<Article> articles = articleService.queryRandomArticleList(5);
         assert !articles.isEmpty();
         System.out.println(articles);
+
+    }
+
+    @Test
+    public void testQueryArticleDetail() throws InterruptedException {
+        Article article = articleService.getArticle(4L);
+        long l = article.getViewCount();
+        System.out.println(">>>>>>>>>> old ViewCount: " + l);
+        ArticleDetail articleDetail = articleService.queryArticleDetail(4L, true);
+        TimeUnit.SECONDS.sleep(3);
+        article = articleService.getArticle(4L);
+        System.out.println(">>>>>>>>>> new ViewCount: " + article.getViewCount());
+        assert  article.getViewCount() == l + 1;
 
     }
 }

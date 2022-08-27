@@ -74,6 +74,9 @@ public class ArticleController {
 
         // 查询文章相关信息
         Article article = articleService.getArticle(articleId);
+        if (!visited) {
+            article.setViewCount(article.getViewCount() + 1);
+        }
         ArticleDetail articleDetail = articleService.queryArticleDetail(articleId, !visited);
         List<Tag> tags = tagService.queryArticleTags(articleId);
         List<Comment> comments = commentService.queryCommentsWithUserInfoByArticleId(articleId);
