@@ -1,6 +1,7 @@
 package blog.seckill.cc.service;
 
 import blog.seckill.cc.entity.Summary;
+import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * description: IndexService <br>
@@ -8,7 +9,7 @@ import blog.seckill.cc.entity.Summary;
  * author: hq <br>
  * version: 1.0 <br>
  */
-public interface IndexService {
+public interface IndexService extends IService<Summary> {
     /**
      * description: getTotalVisitCount  获取总访问量<br>
      * version: 1.0 <br>

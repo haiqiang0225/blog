@@ -2,6 +2,9 @@ package blog.seckill.cc.mapper;
 
 import blog.seckill.cc.entity.Summary;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.mybatis.spring.SqlSessionTemplate;
+
+import javax.annotation.Resource;
 
 /**
  * description: SummaryMapper <br>

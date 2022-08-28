@@ -1,12 +1,10 @@
 package blog.seckill.cc.filter;
 
-import blog.seckill.cc.domain.LoginUser;
 import blog.seckill.cc.entity.User;
 import blog.seckill.cc.exception.UnLoginException;
 import blog.seckill.cc.service.impl.LoginServiceImpl;
 import blog.seckill.cc.util.JwtUtil;
 import io.jsonwebtoken.Claims;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,8 +32,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response,
-                                    @NotNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         // 获取token
         String token = request.getHeader("token");
         if (!StringUtils.hasText(token)) {

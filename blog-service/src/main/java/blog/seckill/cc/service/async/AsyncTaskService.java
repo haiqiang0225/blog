@@ -102,7 +102,7 @@ public abstract class AsyncTaskService {
 
 
     /**
-     * description: doSync 执行同步任务的逻辑代码 <br>
+     * description: doSync 执行同步任务的逻辑代码, 因为只有一个线程执行,且不会和异步任务同时执行, 不需要保证线程安全 <br>
      * version: 1.0 <br>
      * date: 2022/8/27 20:00 <br>
      * author: hq <br>
@@ -158,7 +158,7 @@ public abstract class AsyncTaskService {
      * version: 1.0 <br>
      * date: 2022/8/27 21:09 <br>
      * author: haiqiang0225@gmail.com <br>
-     *
+     * <p>
      * 所有子类都应该继承该类实现异步任务
      *
      * @see AsyncTaskService
@@ -172,6 +172,12 @@ public abstract class AsyncTaskService {
 
         static final int DEFAULT_SLEEP_TIME = 100;
 
+        /**
+         * description: doRunTask 执行异步提交任务,该方法需要保证是线程安全的 <br>
+         * version: 1.0 <br>
+         * date: 2022/8/28 10:06 <br>
+         * author: haiqiang0225@gmail.com <br>
+         */
         protected abstract void doRunTask();
 
         @Override

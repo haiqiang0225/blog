@@ -6,7 +6,6 @@ import blog.seckill.cc.enums.RedisKeyPrefix;
 import blog.seckill.cc.util.IpUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -38,8 +37,8 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
     private RedisTemplate<String, Integer> redisTemplate;
 
     @Override
-    public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
-                             @NotNull Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                             Object handler) throws Exception {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();
