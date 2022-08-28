@@ -55,6 +55,7 @@
 
         SELECT *
         FROM tb_article
+        ORDER BY top_flag DESC, create_date DESC
         LIMIT #{start}, #{count}
 
         ) as tb_article
@@ -67,8 +68,6 @@
         <if test="queryTop == false">
             WHERE top_flag != 1
         </if>
-
-        ORDER BY top_flag DESC, create_date DESC;
 
     </select>
 
