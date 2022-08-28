@@ -282,11 +282,6 @@ export default {
       totalCount.value = response.data.count;
       tags.value = response.data.tags;
 
-      // dev:
-      if (process.env.NODE_ENV === "development") {
-        console.log(articleList.value.length)
-        console.log(articleList.value)
-      }
 
       // 存储到本地
       localStorage.setItem("articleListVersion", response.data.articleListVersion);

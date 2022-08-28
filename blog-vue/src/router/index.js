@@ -43,10 +43,6 @@ const routes = [
         path: '/article/:id',
         name: 'article',
         component: Article,
-        // props: {
-        //     id: true,
-        //     article: true
-        // }
     },
 ];
 
