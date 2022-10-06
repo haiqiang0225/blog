@@ -1,8 +1,8 @@
 package blog.seckill.cc.test.service;
 
 import blog.seckill.cc.BlogServiceMainApp;
-import blog.seckill.cc.entity.Summary;
-import blog.seckill.cc.mapper.SummaryMapper;
+import blog.seckill.cc.entity.VisitRecord;
+import blog.seckill.cc.mapper.VisitRecordMapper;
 import blog.seckill.cc.service.IndexService;
 import blog.seckill.cc.service.impl.IndexServiceImpl;
 import blog.seckill.cc.test.TestBase;
@@ -29,7 +29,7 @@ public class IndexServiceTest extends TestBase {
     private IndexService indexService;
 
     @Resource
-    private SummaryMapper summaryMapper;
+    private VisitRecordMapper visitRecordMapper;
 
     @Test
     public void testGetTotalViewCount() throws NoSuchFieldException, IllegalAccessException {
@@ -48,9 +48,9 @@ public class IndexServiceTest extends TestBase {
         CountDownLatch countDownLatch = new CountDownLatch(20);
         for (int i = 0; i < 20; i++) {
             int finalI = i;
-            Summary summary = new Summary();
-            summary.setIp("0.0.0.0");
-            summary.setVisitDate(new Date());
+            VisitRecord visitRecord = new VisitRecord();
+            visitRecord.setIp("0.0.0.0");
+            visitRecord.setVisitDate(new Date());
             new Thread(() -> {
                 countDownLatch.countDown();
                 try {
@@ -58,8 +58,8 @@ public class IndexServiceTest extends TestBase {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                summary.setVisitorLocation("测试用例" + finalI);
-                indexService.addTotalVisitCount(summary);
+                visitRecord.setVisitorLocation("测试用例" + finalI);
+                indexService.addTotalVisitCount(visitRecord);
             }).start();
         }
         int totalVisitCount = indexService.getTotalVisitCount();
@@ -67,7 +67,7 @@ public class IndexServiceTest extends TestBase {
 
         TimeUnit.SECONDS.sleep(3);
         assert tvcOld + 20 == totalVisitCount;
-        Long aLong = summaryMapper.selectCount(new QueryWrapper<>());
+        Long aLong = visitRecordMapper.selectCount(new QueryWrapper<>());
 
         System.out.println(">>>>>>> tvcSelect = " + aLong);
 

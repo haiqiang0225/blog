@@ -4,6 +4,7 @@
     <inspection_tool class="ChannelResource" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="insideTryAllowed" value="false" />
     </inspection_tool>
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="FieldCanBeLocal" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="EXCLUDE_ANNOS">
         <value>

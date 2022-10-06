@@ -10,7 +10,7 @@ import lombok.ToString;
 import java.util.Date;
 
 /**
- * description: Summary 统计信息<br>
+ * description: VisitRecord 统计信息<br>
  * date: 2022/7/14 18:39 <br>
  * author: hq <br>
  * version: 1.0 <br>
@@ -20,7 +20,7 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName("tb_blog_summary")
 @ToString
-public class Summary {
+public class VisitRecord {
     @TableId
     private Long id;
 

@@ -132,4 +132,9 @@ public class ArticleServiceImpl extends ViewCountAsyncTaskService implements Art
         return totalCount;
     }
 
+    @Override
+    public List<Article> searchArticleWithKeyWord(int start, int count, String keyWord) {
+        return articleMapper.searchArticleWithKeyWord(start, count, keyWord);
+    }
+
 }

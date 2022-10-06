@@ -89,4 +89,22 @@ public class ArticleController {
         return result;
     }
 
+    @GetMapping("/search")
+    public Result search(
+            @RequestParam("start") int start,
+            @RequestParam("count") int count,
+            @RequestParam("keyWord") String keyWord) {
+        if (!isValidParam(keyWord)) {
+            return Result.error("关键字错误");
+        }
+        Result result = new Result();
+        List<Article> articles = articleService.searchArticleWithKeyWord(start, count, keyWord);
+        result.put("articles", articles);
+        return result;
+    }
+
+    private boolean isValidParam(String param) {
+        return param != null;
+    }
+
 }

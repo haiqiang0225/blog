@@ -44,8 +44,8 @@
 
           <!--  搜索  -->
           <div class="search-container">
-            <input type="text">
-            <button>
+            <input type="text" v-model="keyWord" @keyup.enter.up="search">
+            <button @click="search">
               <font-awesome-icon icon="fa-search"/>
               搜索
             </button>
@@ -125,11 +125,13 @@
 </template>
 
 <script>
-import {onMounted, ref, reactive, computed} from "vue";
+import {ref, computed} from "vue";
 
 import categoryHelloImgURL from "@/assets/image/category-hello.jpg";
 import tagHelloImgRUL from "@/assets/image/tag-hello.jpg"
 import {useStore} from "vuex";
+import axios from "axios";
+import {ElMessage} from "element-plus";
 
 
 export default {
@@ -152,20 +154,33 @@ export default {
     // 获取全局的滚动条
     let globalScrollBar = store.state.globalScrollBar;
 
+    let articles = store.state.articles
+
+    let keyWord = ref("")
+
     return {
-      showNav, globalScrollBar, categoryHelloImgURL, tagHelloImgRUL,
+      showNav, globalScrollBar, keyWord, articles, categoryHelloImgURL, tagHelloImgRUL,
       // vuex
       scrollTop: computed(() => store.state.scrollTop),
     };
   },
-  methods: {},
-  computed: {},
+  methods: {
+    async search() {
+      this.$store.commit("setSearchMode", true)
+      this.$store.commit("setKeyWord", this.keyWord)
+      await this.$router.push("/")
+    },
+
+  },
+  computed: {
+    searchMode: state => state.searchMode,
+  },
   watch: {
     // // 监听滚动
     scrollTop(newVal, oldVal) {
       // 已经滑动了 100px 并且是向下滑动的情况下才隐藏导航栏
       this.showNav = !(newVal > 100 && newVal > oldVal);
-    },
+    }
 
   },
   mounted() {

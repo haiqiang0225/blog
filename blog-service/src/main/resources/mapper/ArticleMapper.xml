@@ -76,4 +76,36 @@
         SET view_count = view_count + #{add}
         WHERE article_id = #{articleId}
     </update>
+
+    <select id="searchArticleWithKeyWord" resultMap="article">
+
+        SELECT tb_article.*,
+               tb_tags.tag_id,
+               tb_tags.name            as tag_name,
+               tb_tags.alias           as tag_alias,
+               tb_tags.description     as tag_tag_description,
+
+               tb_category.category_id,
+               tb_category.name        as category_name,
+               tb_category.alias       as category_alias,
+               tb_category.description as category_description,
+               tb_category.parent_id   as category_parent_id
+
+        FROM (SELECT *
+              FROM tb_article
+              WHERE article_id IN
+                    (SELECT tb_article_detail.article_id
+                     FROM tb_article_detail
+                     WHERE MATCH(content) AGAINST(#{keyWord} IN BOOLEAN MODE))
+              ORDER BY top_flag DESC, create_date DESC
+              LIMIT #{start}, #{count}) as tb_article
+
+                 LEFT JOIN tb_article_category on tb_article.article_id = tb_article_category.article_id
+                 LEFT JOIN tb_article_tags on tb_article.article_id = tb_article_tags.article_id
+                 LEFT JOIN tb_category on tb_category.category_id = tb_article_category.category_id
+                 LEFT JOIN tb_tags on tb_tags.tag_id = tb_article_tags.tag_id
+
+        ORDER BY top_flag DESC
+    </select>
+
 </mapper>

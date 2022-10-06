@@ -203,8 +203,9 @@ public abstract class AsyncTaskService {
             activeAddTaskCount.getAndIncrement();
             // 执行业务逻辑
             doRunTask();
-            activeAddTaskCount.getAndDecrement();
             // 统计活跃任务计数减少
+            activeAddTaskCount.getAndDecrement();
+            // 唤醒执行同步任务的线程
             unParkSyncThread();
         }
     }

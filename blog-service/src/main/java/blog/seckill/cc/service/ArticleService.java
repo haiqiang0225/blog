@@ -77,4 +77,17 @@ public interface ArticleService {
     Integer getTopArticleCount();
 
     Integer getTotalArticleCount();
+
+    /**
+     * description: searchArticleWithKeyWord 根据关键字查询文章列表<br>
+     * version: 1.0 <br>
+     * date: 2022/10/5 15:46 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param start   开始index
+     * @param count   查询数量
+     * @param keyWord 关键字
+     * @return java.util.List<blog.seckill.cc.entity.Article>
+     */
+    List<Article> searchArticleWithKeyWord(int start, int count, String keyWord);
 }

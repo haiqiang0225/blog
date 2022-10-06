@@ -54,6 +54,14 @@ public class ArticleMapperTest extends TestBase {
         articleMapper.addViewCount(4L, 10L);
     }
 
+    @Test
+    public void testSearch() {
+        List<Article> spring = articleMapper.searchArticleWithKeyWord(0, 1000, "Spring");
+        assert spring != null;
+        System.out.println(">>>>>>>>>" + spring);
+    }
+
+
     //    @Test
     public void insertArticleForTest() {
         Article article = new Article();
@@ -121,7 +129,6 @@ public class ArticleMapperTest extends TestBase {
             articleDetailMapper.insert(articleDetail);
         }
     }
-
 
 
 }

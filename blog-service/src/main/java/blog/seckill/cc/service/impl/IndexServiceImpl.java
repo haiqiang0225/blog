@@ -1,25 +1,17 @@
 package blog.seckill.cc.service.impl;
 
 import blog.seckill.cc.annotation.QueryAtInit;
-import blog.seckill.cc.entity.Summary;
-import blog.seckill.cc.mapper.SummaryMapper;
+import blog.seckill.cc.entity.VisitRecord;
+import blog.seckill.cc.mapper.VisitRecordMapper;
 import blog.seckill.cc.mapper.WebInfoMapper;
 import blog.seckill.cc.service.IndexService;
-import blog.seckill.cc.service.async.AsyncTaskService;
 import blog.seckill.cc.service.async.RecordAsyncTaskService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * description: IndexServiceImpl <br>
@@ -29,9 +21,9 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class IndexServiceImpl extends ServiceImpl<SummaryMapper, Summary> implements IndexService {
+public class IndexServiceImpl extends ServiceImpl<VisitRecordMapper, VisitRecord> implements IndexService {
 
-    private final RecordAsyncTaskService<Summary> asyncTaskService = new RecordAsyncTaskService<Summary>() {
+    private final RecordAsyncTaskService<VisitRecord> asyncTaskService = new RecordAsyncTaskService<VisitRecord>() {
         @Override
         protected boolean doSync() {
             boolean b = saveBatch(recordArrayList);
@@ -42,12 +34,12 @@ public class IndexServiceImpl extends ServiceImpl<SummaryMapper, Summary> implem
     };
 
     @Resource
-    private SummaryMapper summaryMapper;
+    private VisitRecordMapper visitRecordMapper;
 
     @Resource
     private WebInfoMapper webInfoMapper;
 
-    @QueryAtInit(mapperClass = SummaryMapper.class)
+    @QueryAtInit(mapperClass = VisitRecordMapper.class)
     private volatile int totalVisitCount = 0;
 
 
@@ -61,8 +53,8 @@ public class IndexServiceImpl extends ServiceImpl<SummaryMapper, Summary> implem
     }
 
     @Override
-    public int addTotalVisitCount(Summary summary) {
-        asyncTaskService.exec(summary);
+    public int addTotalVisitCount(VisitRecord visitRecord) {
+        asyncTaskService.exec(visitRecord);
         synchronized (this) {
             totalVisitCount += 1;
         }

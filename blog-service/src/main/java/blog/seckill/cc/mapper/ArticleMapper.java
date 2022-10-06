@@ -37,4 +37,19 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @param add
      */
     void addViewCount(@Param("articleId") Long articleId, @Param("add") Long add);
+
+    /**
+     * description: searchArticleWithKeyWord 按照关键字查找文章列表<br>
+     * version: 1.0 <br>
+     * date: 2022/10/5 15:38 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param start   开始index
+     * @param count   查询数量
+     * @param keyWord 关键字
+     * @return java.util.List<blog.seckill.cc.entity.Article>
+     */
+    List<Article> searchArticleWithKeyWord(@Param("start") int start,
+                                           @Param("count") int count,
+                                           @Param("keyWord") String keyWord);
 }

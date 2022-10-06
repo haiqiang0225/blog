@@ -221,11 +221,24 @@ import HomeBanner from "@/views/banner/HomeBanner";
 import axios from "@/utils/axios";
 import JsCookie from "js-cookie";
 import router from "@/router";
+import {mapState, useStore} from "vuex";
+
 
 export default {
-  name: "Home",
+  name: "HomePage",
   components: {HomeBanner},
   setup() {
+    const store = useStore()
+
+    // 获取全局的滚动条
+    const globalScrollBar = store.state.globalScrollBar;
+
+    let scrollToInfo = function () {
+      globalScrollBar.scrollTo({
+        top: document.documentElement.clientHeight,
+        behavior: "smooth",
+      });
+    };
 
     // 网站统计信息
     const webStartTime = new Date('2022/7/14 00:00:00');
@@ -235,93 +248,13 @@ export default {
     // 总访问数
     const totalVisitCount = ref(0);
 
-
     // 展示信息
-    const lookRandoms = ref([]);
-    const articleList = ref([]);
     let totalCount = ref(0);
-    const tags = ref([]);
 
     // 页面状态控制
     const onInit = ref(true);
     const loading = ref(false);
     const disabledInfiniteLoading = ref(false);
-
-    // 初次加载从后端请求, 这里包装一层,进行同步
-    let onFirstLoading = async function () {
-      loading.value = true;
-      let articleListVersion = localStorage.getItem("articleListVersion") || "";
-      let r = await axios.get("/api/index/get?start=0&count=10&version=" + articleListVersion);
-      loading.value = false;
-      onInit.value = false;
-      return r;
-    }
-    let res = onFirstLoading();
-    res.then(response => {
-      if (response.data.code === 403) {
-        alert(response.data.msg)
-        return;
-      }
-      // 设置cookie标记
-      if (!JsCookie.get("visited")) {
-        JsCookie.set("visited", true, {expires: 0.12});
-      }
-
-      // 无论如何,请求后端的数据
-      totalVisitCount.value = response.data.totalVisitCount;
-      lookRandoms.value = response.data.lookRandoms;
-
-      // 缓存的数据
-      if (response.data.articleListVersion === localStorage.getItem("articleListVersion")) {
-        articleList.value = JSON.parse(localStorage.getItem("articleList"));
-        totalCount.value = JSON.parse(localStorage.getItem("totalCount"));
-        tags.value = JSON.parse(localStorage.getItem("tags"));
-        return;
-      }
-      articleList.value = response.data.data;
-      totalCount.value = response.data.count;
-      tags.value = response.data.tags;
-
-
-      // 存储到本地
-      localStorage.setItem("articleListVersion", response.data.articleListVersion);
-      localStorage.setItem("articleList", JSON.stringify(articleList.value));
-      localStorage.setItem("totalCount", JSON.stringify(totalCount.value));
-      localStorage.setItem("tags", JSON.stringify(tags.value));
-    }).catch(error => {
-      loading.value = false;
-    })
-
-
-    // 从后端请求
-    const load = () => {
-      // 正在加载文章中则不允许调用该方法,避免出错以及优化性能
-      if (loading.value || onInit.value) {
-        return;
-      }
-      // 如果没有更多了
-      if (articleList.value.length >= totalCount.value) {
-        ElMessage('没有更多了');
-        disabledInfiniteLoading.value = true;
-        return;
-      }
-      loading.value = true;
-
-      //dev:
-      if (process.env.NODE_ENV === "development") {
-        console.log(articleList.value.length)
-      }
-      let url = "/api/article/get?start=" + articleList.value.length + "&count=5&total=" + totalCount.value;
-      let promise = axios.get(url);
-      promise
-          .then(response => {
-            articleList.value = articleList.value.concat(response.data.data);
-            loading.value = false;
-          }).catch(error => {
-        loading.value = false;
-        ElMessage.error("出错了,请一会重试");
-      });
-    }
 
 
     // 默认有的颜色,减少随机生成深色颜色的调用次数
@@ -388,20 +321,30 @@ export default {
     }
 
     return {
-      articleList,
       webRunTime,
-      lookRandoms,
-      tags,
       loading,
       disabledInfiniteLoading,
       colorList,
       randomSeed,
-      load,
       totalCount,
       onInit,
       totalVisitCount,
+      globalScrollBar,
+      scrollToInfo,
     };
 
+  },
+  mounted: function () {
+    // 如果是点了搜索跳转过来的 执行搜索的逻辑
+    setTimeout(() => {
+      if (this.searchMode) {
+        this.scrollToInfo();
+        this.search();
+      } else { // 否则执行正常逻辑
+        this.onFirstLoading();
+        this.$store.commit("setSearchMode", false);
+      }
+    }, 1)
   },
   watch: {
     articleList(newVal, oldVal) {
@@ -409,12 +352,170 @@ export default {
         if (item.createDate != null)
           item.createDate = item.createDate.substring(0, 10);
       });
+    },
+    keyWord(newVal) {
+      if (newVal != null) {
+        this.disabledInfiniteLoading = false
+        this.search()
+        this.scrollToInfo()
+      }
     }
   },
   methods: {
     toArticleDetail(article) {
       localStorage.setItem("articleCache" + article.articleId, JSON.stringify(article));
       router.push(`/article/${article.articleId}`);
+    },
+    async onFirstLoading() {
+      this.loading = true;
+      let articleListVersion = localStorage.getItem("articleListVersion") || "";
+      let response = await axios.get("/api/index/get?start=0&count=10&version=" + articleListVersion);
+      this.loading = false;
+      this.onInit = false;
+
+      if (response.data.code === 403) {
+        alert(response.data.msg)
+        return;
+      }
+      // 设置cookie标记
+      if (!JsCookie.get("visited")) {
+        JsCookie.set("visited", true, {expires: 0.12});
+      }
+
+      // 无论如何,请求后端的数据
+      this.totalVisitCount = response.data.totalVisitCount;
+      this.$store.commit('setLookRandoms', response.data.lookRandoms)
+      // this.lookRandoms = response.data.lookRandoms;
+
+      // 缓存的数据
+      if (response.data.articleListVersion === localStorage.getItem("articleListVersion")) {
+        this.syncArticleList(JSON.parse(localStorage.getItem("articleList")))
+        this.totalCount = JSON.parse(localStorage.getItem("totalCount"));
+        this.$store.commit('setTags', JSON.parse(localStorage.getItem("tags")))
+        // this.tags = JSON.parse(localStorage.getItem("tags"));
+        return;
+      }
+      this.articleList = response.data.data;
+      this.totalCount = response.data.count;
+      this.$store.commit('setTags', response.data.tags)
+      // this.tags = response.data.tags;
+
+
+      // 存储到本地
+      localStorage.setItem("articleListVersion", response.data.articleListVersion);
+      localStorage.setItem("articleList", JSON.stringify(this.articleList));
+      localStorage.setItem("totalCount", JSON.stringify(this.totalCount));
+    },
+    // 从后端请求
+    load() {
+      if (this.searchMode) {
+        this.searchModeLoad()
+      } else {
+        this.simpleLoad()
+      }
+    },
+    // 正常加载
+    simpleLoad() {
+      // 正在加载文章中则不允许调用该方法,避免出错以及优化性能
+      if (this.loading || this.onInit) {
+        return;
+      }
+      // 如果没有更多了
+      if (this.disabledInfiniteLoading) {
+        ElMessage('没有更多了');
+        return;
+      }
+      this.loading = true;
+      //dev:
+      if (process.env.NODE_ENV === "development") {
+        console.log(this.articleList.length)
+      }
+      let url = "/api/article/get?start=" + this.articleList.length + "&count=5&total=" + this.totalCount;
+      let promise = axios.get(url);
+      promise
+          .then(response => {
+            this.appendArticle(response.data.data)
+            this.loading = false;
+            if (response.data.data.length < 5) {
+              ElMessage('没有更多了');
+              this.disabledInfiniteLoading = true;
+            }
+          }).catch(error => {
+            console.log(error)
+            this.loading = false;
+            ElMessage.error("出错了,请一会重试");
+          }
+      );
+    },
+    // 搜索模式下的加载
+    searchModeLoad() {
+      if (this.loading || this.onInit) {
+        return;
+      }
+      // 没有更多了
+      if (this.disabledInfiniteLoading) {
+        ElMessage('没有更多了');
+        return;
+      }
+      this.loading = true
+      let url = "/api/article/search?start=" + this.articleList.length + "&count=5&keyWord=" + this.keyWord
+      let promise = axios.get(url)
+      promise
+          .then(res => {
+            this.appendArticle(res.data.articles)
+            this.loading = false
+            if (res.data.articles.length < 5) {
+              this.disabledInfiniteLoading = true
+              ElMessage('没有更多了')
+            }
+          })
+          .catch(err => {
+            this.loading = false
+            console.log(err)
+          })
+    },
+    async search() {
+      if (this.keyWord == null || this.keyWord.replace(/(^\s*)|(\s*$)/g, "").length === 0) {
+        ElMessage("没有有效输入!");
+        return;
+      }
+      this.onInit = true
+      let searchResult = await this.doSearch(this.keyWord)
+      // console.log(searchResult)
+      if (searchResult.length <= 0) {
+        ElMessage("没有找到相关文章")
+        this.onInit = false
+        return;
+      }
+      this.$store.commit("syncArticles", {articles: searchResult})
+      this.$store.commit("setSearchMode", true)
+      this.$store.commit("setKeyWord", this.keyWord)
+      ElMessage.success("搜索成功!")
+      this.onInit = false
+    },
+    // 返回文章的列表
+    async doSearch(keyWord) {
+      let r = await axios.get("/api/article/search?start=0&count=10&keyWord=" + keyWord)
+      return r.data.articles
+    },
+    syncArticleList(articleList) {
+      this.$store.commit("syncArticles", {articles: articleList})
+    },
+    appendArticle(newArticles) {
+      this.$store.commit("articlesConcat", {articles: newArticles})
+    }
+  },
+  computed: mapState({
+    articleList: state => state.articles,
+    searchMode: state => state.searchMode,
+    keyWord: state => state.keyWord,
+    tags: state => state.tags,
+    lookRandoms: state => state.lookRandoms
+  }),
+  beforeRouteLeave(to) {
+    // 如果不是进入文章详情,则清楚搜索状态
+    if ("article" !== to.name) {
+      this.$store.commit('setSearchMode', false);
     }
   }
 }

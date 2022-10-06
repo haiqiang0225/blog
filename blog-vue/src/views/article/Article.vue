@@ -32,7 +32,7 @@
         </div>
 
         <!--   统计信息     -->
-        <div class="summary-info-wrap">
+        <div class="visitRecord-info-wrap">
           <!--   字数统计   -->
           <div class="word-count">
             <span>字数统计: {{ wordCount }}</span>
@@ -652,7 +652,7 @@ export default {
 }
 
 /* 统计信息 */
-.summary-info-wrap {
+.visitRecord-info-wrap {
   text-align: center;
   position: relative;
   top: 5px;

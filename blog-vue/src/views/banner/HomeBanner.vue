@@ -33,7 +33,7 @@
 
 <script>
 
-import {reactive, ref} from "vue";
+import {onUnmounted, reactive, ref} from "vue";
 import {useStore} from "vuex"
 import axios from "@/utils/axios";
 
@@ -104,6 +104,11 @@ export default {
         behavior: "smooth",
       });
     };
+
+    // 清除动画定时器
+    onUnmounted(() => {
+      clearInterval(userAnimationInterval)
+    })
     return {showInfoAnimation, scrollToInfo, showCursorAnimation, globalScrollBar, bannerText};
   }
 }

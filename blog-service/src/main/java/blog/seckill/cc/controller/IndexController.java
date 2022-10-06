@@ -3,7 +3,7 @@ package blog.seckill.cc.controller;
 import blog.seckill.cc.annotation.RequestLimit;
 import blog.seckill.cc.entity.Article;
 import blog.seckill.cc.domain.Result;
-import blog.seckill.cc.entity.Summary;
+import blog.seckill.cc.entity.VisitRecord;
 import blog.seckill.cc.entity.Tag;
 import blog.seckill.cc.service.ArticleService;
 import blog.seckill.cc.service.IndexService;
@@ -16,11 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * description: IndexController <br>
@@ -66,10 +64,10 @@ public class IndexController {
         // 说明6个小时内没有访问过
         int totalVisitCount = 0;
         if (!visited) {
-            Summary summary = new Summary();
-            summary.setVisitDate(new Date());
-            summary.setIp(IpUtil.getClientIpAddress(request));
-            totalVisitCount = indexService.addTotalVisitCount(summary);
+            VisitRecord visitRecord = new VisitRecord();
+            visitRecord.setVisitDate(new Date());
+            visitRecord.setIp(IpUtil.getClientIpAddress(request));
+            totalVisitCount = indexService.addTotalVisitCount(visitRecord);
         } else {
             totalVisitCount = indexService.getTotalVisitCount();
         }

@@ -1,6 +1,6 @@
 package blog.seckill.cc.service;
 
-import blog.seckill.cc.entity.Summary;
+import blog.seckill.cc.entity.VisitRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * author: hq <br>
  * version: 1.0 <br>
  */
-public interface IndexService extends IService<Summary> {
+public interface IndexService {
     /**
      * description: getTotalVisitCount  获取总访问量<br>
      * version: 1.0 <br>
@@ -28,7 +28,7 @@ public interface IndexService extends IService<Summary> {
      *
      * @return int
      */
-    int addTotalVisitCount(Summary summary);
+    int addTotalVisitCount(VisitRecord visitRecord);
 
     /**
      * description: getArticleListVersion 获取文章列表的版本<br>

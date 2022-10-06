@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
 import CommonHello from "@/views/banner/CommonBanner";
-import Home from "@/views/home/Home";
+import HomePage from "@/views/home/Home";
 import Category from "@/views/category/Category";
 import Tag from "@/views/tag/Tag";
 import AboutMe from "@/views/about/AboutMe";
@@ -12,7 +12,7 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: Home,
+        component: HomePage,
     },
     {
         path: '/category',

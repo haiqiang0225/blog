@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -23,7 +22,7 @@ import java.lang.reflect.Field;
  */
 @Component
 @Slf4j
-public class QueryAtInitAnnotationBeanPostProcessor implements SmartInitializingSingleton, BeanPostProcessor {
+public class QueryAtInitAnnotationBeanPostProcessor implements BeanPostProcessor {
 
     @Resource
     private ApplicationContext context;
@@ -73,15 +72,11 @@ public class QueryAtInitAnnotationBeanPostProcessor implements SmartInitializing
             }
 
         }
-        return null;
+        return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
     }
 
     public String getSetterName(String rowName) {
         rowName = "set" + rowName.substring(0, 1).toUpperCase() + rowName.substring(1);
         return rowName;
-    }
-
-    @Override
-    public void afterSingletonsInstantiated() {
     }
 }
