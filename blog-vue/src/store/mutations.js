@@ -19,5 +19,11 @@ export default {
     },
     setTags(state, tags) {
         state.tags = tags
+    },
+    setNeedSimpleLoad(state, flag) {
+        state.needSimpleLoad = flag;
+    },
+    setFirstVisitOurHomePage(state, flag) {
+        state.firstVisitOurHomePage = flag;
     }
 };

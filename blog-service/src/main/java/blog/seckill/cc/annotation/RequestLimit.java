@@ -17,7 +17,7 @@ public @interface RequestLimit {
     int second() default 60;
 
     // 最大请求次数
-    int maxCount() default 20;
+    int maxCount() default 40;
 
     // 新的请求到来,是否刷新redis中key的过期时间
     boolean refreshExpireTime() default true;

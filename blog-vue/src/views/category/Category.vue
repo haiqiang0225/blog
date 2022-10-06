@@ -15,6 +15,7 @@
         >
           <router-link
               to=""
+              @click="search(item)"
               :key="item.id"
           >
             <span>● &nbsp;</span>
@@ -37,7 +38,6 @@ import {ref} from "vue"
 
 import CommonBanner from "@/views/banner/CommonBanner";
 
-import bannerImgURL from "@/assets/image/category-hello.jpg";
 import axios from "@/utils/axios";
 import {ElMessage} from "element-plus";
 
@@ -62,6 +62,24 @@ export default {
 
     return {categoryList, onInit};
   },
+  methods: {
+    async search(category) {
+      let categoryId = category.categoryId;
+      if (categoryId === undefined || categoryId === null) {
+        ElMessage.error("出错了")
+        return;
+      }
+      let url = "/api/article/category?start=0&categoryId=" + categoryId;
+      let res = await axios.get(url);
+      if (res.data.code === 403) {
+        ElMessage.error("访问过快,请等待一分钟再访问!")
+        return;
+      }
+      await this.$store.commit('syncArticles', {articles: res.data.articles})
+      await this.$store.commit('setNeedSimpleLoad', false);
+      await this.$router.push("/")
+    }
+  }
 }
 </script>
 

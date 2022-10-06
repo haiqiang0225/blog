@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class RequestLimitInterceptor implements HandlerInterceptor {
 
-    private static final int DEFAULT_LIMIT = 20;
+    private static final int DEFAULT_LIMIT = 40;
 
     private static final int DEFAULT_SEC = 60;
 
@@ -50,7 +50,7 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
                 return true;
             }
             if (shouldLimitAccess(request, requestLimit)) {
-                responsePrint(response, "访问过快,请过一段时间再访问!");
+                responsePrint(response, "访问过快,请等待一分钟再访问!");
                 return false;
             }
         }
@@ -60,6 +60,9 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
     private boolean shouldLimitAccess(HttpServletRequest request, RequestLimit requestLimit) {
         // 解析
         int maxCount = requestLimit.maxCount();
+        if (maxCount == 0) {
+            maxCount = DEFAULT_LIMIT;
+        }
         int sec = requestLimit.second();
         boolean refreshExpireTime = requestLimit.refreshExpireTime();
         if (sec == 0) {
@@ -68,7 +71,7 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
         String key = generateKeyForRedis(request);
         // 获取当前的访问次数
         Integer curCount = redisTemplate.opsForValue().get(key);
-        System.out.println(curCount);
+        log.debug("cur should limit count: {}", curCount);
         if (curCount == null) {
             redisTemplate.opsForValue().set(key, 1, sec, TimeUnit.SECONDS);
         } else if (curCount < maxCount) {
@@ -85,12 +88,20 @@ public class RequestLimitInterceptor implements HandlerInterceptor {
             log.info("redis key : {}, 访问受限", key);
             return true;
         }
-        return false;
+
+        // 判断首页是否被禁止访问,是的话全部资源禁止访问
+        String indexPageKey = getGlobalIndexKey(request);
+        curCount = redisTemplate.opsForValue().get(indexPageKey);
+        return curCount != null && curCount >= maxCount;
     }
 
 
     public String generateKeyForRedis(HttpServletRequest request) {
         return RedisKeyPrefix.REQUEST_LIMIT + ":" + IpUtil.getClientIpAddress(request) + ":" + request.getRequestURI();
+    }
+
+    public String getGlobalIndexKey(HttpServletRequest request) {
+        return RedisKeyPrefix.REQUEST_LIMIT + ":" + IpUtil.getClientIpAddress(request) + ":" + "/index/get";
     }
 
     private void responsePrint(HttpServletResponse response, String msg) {

@@ -90,4 +90,30 @@ public interface ArticleService {
      * @return java.util.List<blog.seckill.cc.entity.Article>
      */
     List<Article> searchArticleWithKeyWord(int start, int count, String keyWord);
+
+    /**
+     * description: selectArticlesByTag 根据Tag查询文章<br>
+     * version: 1.0 <br>
+     * date: 2022/10/6 18:44 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param start 开始index
+     * @param count 查询数量
+     * @param tagId tag的id
+     * @return java.util.List<blog.seckill.cc.entity.Article>
+     */
+    List<Article> selectArticlesByTag(int start, int count, Long tagId);
+
+    /**
+     * description: selectArticlesByCategory 根据分类查询文章 <br>
+     * version: 1.0 <br>
+     * date: 2022/10/6 18:44 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param start      开始index
+     * @param count      查询数量
+     * @param categoryId 分类ID
+     * @return java.util.List<blog.seckill.cc.entity.Article>
+     */
+    List<Article> selectArticlesByCategory(int start, int count, Long categoryId);
 }

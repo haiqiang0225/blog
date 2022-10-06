@@ -1,5 +1,6 @@
 package blog.seckill.cc.test.mapper;
 
+import blog.seckill.cc.entity.Tag;
 import blog.seckill.cc.test.TestBase;
 import blog.seckill.cc.BlogServiceMainApp;
 import blog.seckill.cc.entity.Article;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * description: ArticleMapperTest <br>
@@ -59,6 +61,38 @@ public class ArticleMapperTest extends TestBase {
         List<Article> spring = articleMapper.searchArticleWithKeyWord(0, 1000, "Spring");
         assert spring != null;
         System.out.println(">>>>>>>>>" + spring);
+    }
+
+    @Test
+    public void testSelectByTag() {
+        Long tagId = 0L;
+        List<Article> articles = articleMapper.selectArticlesByTag(0, 10, tagId);
+        assert articles != null;
+        System.out.println(">>>>>" + articles);
+        System.out.println(articles.size());
+        // 测试是否所有的都确实包含
+        for (Article article : articles) {
+            boolean contains = false;
+            for (Tag tag : article.getTags()) {
+                if (tag != null && Objects.equals(tag.getTagId(), tagId)) {
+                    contains = true;
+                    break;
+                }
+            }
+            assert contains;
+        }
+    }
+
+    @Test
+    public void testSelectByCategory() {
+        Long catId = 0L;
+        List<Article> articles = articleMapper.selectArticlesByCategory(0, 10, catId);
+        assert articles != null;
+        for (Article article : articles) {
+            assert Objects.equals(article.getCategory().getCategoryId(), catId);
+        }
+        System.out.println(">>>>>>>>>>>>>>>>" + articles);
+        System.out.println(">>>>>>>>>>>>>>>>" + articles.size());
     }
 
 

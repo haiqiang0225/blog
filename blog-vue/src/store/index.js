@@ -10,7 +10,10 @@ const state = {
     searchMode: false,
     keyWord: null,
     lookRandoms: [],
-    tags: []
+    tags: [],
+    // 控制主页是否需要按默认方式加载文章
+    needSimpleLoad: true,
+    firstVisitOurHomePage: true,
 };
 
 export default createStore({

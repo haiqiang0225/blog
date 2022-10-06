@@ -60,20 +60,23 @@
           <span class="separator">|</span>
 
           <!--     文章分类     -->
-          <router-link to="#" class="article-category">
+          <button
+              @click="searchByCategory(article.category)"
+              class="article-category">
             <font-awesome-icon icon="fa-th-large"/>
             {{ article.category != null ? article.category.name : `` }}
-          </router-link>
+          </button>
           <span class="separator">|</span>
 
           <!--     文章标签     -->
-          <router-link to="" class="article-tag"
-                       v-for="(tag, index) in article.tags"
-                       :key="index"
+          <button @click="searchByTag(tag.tagId)"
+                  class="article-tag"
+                  v-for="(tag, index) in article.tags"
+                  :key="index"
           >
             <font-awesome-icon icon="fa-tag"/>
             {{ tag.name }}
-          </router-link>
+          </button>
 
           <!--    文章内容    -->
           <div class="article-content">
@@ -172,15 +175,15 @@
             v-for="(item, index) in tags"
             :key="index"
         >
-          <router-link
-              to="#"
+          <button
+              @click="searchByTag(item.tagId)"
               class="tag-item"
               :style="{color: colorList[(index + randomSeed) % colorList.length]}"
           >
 
             {{ item.name }}
 
-          </router-link>
+          </button>
         </div>
       </div>
 
@@ -314,12 +317,6 @@ export default {
       timeInterval != null ? clearInterval(timeInterval) : null;
     })
 
-    // 如果是用小屏设备访问的,才显示提示信息
-    // todo: 适配后删除.
-    if (window.innerWidth < 1660 || window.innerHeight < 500) {
-      ElMessage("本站暂未对小屏设备和移动设备进行适配,建议使用大屏设备访问!");
-    }
-
     return {
       webRunTime,
       loading,
@@ -337,7 +334,19 @@ export default {
   mounted: function () {
     // 如果是点了搜索跳转过来的 执行搜索的逻辑
     setTimeout(() => {
-      if (this.searchMode) {
+      // 如果是用小屏设备访问的,才显示提示信息
+      // todo: 适配后删除.
+      if (this.firstVisitOurHomePage && window.innerWidth < 1660 || window.innerHeight < 500) {
+        ElMessage("本站暂未对小屏设备和移动设备进行适配,建议使用大屏设备访问!");
+        this.$store.commit('setFirstVisitOurHomePage', false);
+      }
+      // 如果不需要执行onFirstLoading
+      if (!this.needSimpleLoad) {
+        this.onInit = false;
+        this.disabledInfiniteLoading = true;
+        this.$store.commit('setNeedSimpleLoad', true);
+        this.scrollToInfo();
+      } else if (this.searchMode) {
         this.scrollToInfo();
         this.search();
       } else { // 否则执行正常逻辑
@@ -347,18 +356,22 @@ export default {
     }, 1)
   },
   watch: {
-    articleList(newVal, oldVal) {
+    articleList(newVal) {
+      if (newVal === undefined || newVal === null) {
+        return;
+      }
       newVal.forEach(item => {
         if (item.createDate != null)
           item.createDate = item.createDate.substring(0, 10);
       });
     },
     keyWord(newVal) {
-      if (newVal != null) {
-        this.disabledInfiniteLoading = false
-        this.search()
-        this.scrollToInfo()
+      if (newVal == null || newVal === "" || newVal.replace(/(^\s*)|(\s*$)/g, "").length === 0) {
+        return;
       }
+      this.disabledInfiniteLoading = false
+      this.search()
+      this.scrollToInfo()
     }
   },
   methods: {
@@ -498,6 +511,44 @@ export default {
       let r = await axios.get("/api/article/search?start=0&count=10&keyWord=" + keyWord)
       return r.data.articles
     },
+    // 根据Tag查询文章
+    async searchByTag(tagId) {
+      this.onInit = true;
+      let url = "/api/article/tags?start=0&tagId=" + tagId
+      let res = await axios.get(url)
+      if (res.data.code === 403) {
+        ElMessage.error("访问过快,请等待一分钟再访问!")
+        this.onInit = false;
+        return;
+      }
+      if (res.data.articles === undefined || res.data.articles === null || res.data.articles.length <= 0) {
+        ElMessage.warning("暂时没有文章有该标签")
+        this.onInit = false;
+        return;
+      }
+      this.$store.commit('syncArticles', {articles: res.data.articles})
+      this.disabledInfiniteLoading = true
+      this.onInit = false;
+    },
+    async searchByCategory(category) {
+      this.onInit = true;
+      let categoryId = category.categoryId;
+      if (categoryId === undefined || categoryId === null) {
+        ElMessage.error("出错了")
+        this.onInit = false;
+        return;
+      }
+      let url = "/api/article/category?start=0&categoryId=" + categoryId;
+      let res = await axios.get(url);
+      if (res.data.code === 403) {
+        ElMessage.error("访问过快,请等待一分钟再访问!")
+        this.onInit = false;
+        return;
+      }
+      this.$store.commit('syncArticles', {articles: res.data.articles})
+      this.disabledInfiniteLoading = true
+      this.onInit = false;
+    },
     syncArticleList(articleList) {
       this.$store.commit("syncArticles", {articles: articleList})
     },
@@ -510,7 +561,9 @@ export default {
     searchMode: state => state.searchMode,
     keyWord: state => state.keyWord,
     tags: state => state.tags,
-    lookRandoms: state => state.lookRandoms
+    lookRandoms: state => state.lookRandoms,
+    needSimpleLoad: state => state.needSimpleLoad,
+    firstVisitOurHomePage: state => state.firstVisitOurHomePage
   }),
   beforeRouteLeave(to) {
     // 如果不是进入文章详情,则清楚搜索状态
@@ -586,7 +639,7 @@ export default {
   margin-bottom: 16px;
   border-radius: inherit;
   color: #a1a3a9;
-
+  overflow: hidden;
   box-shadow: 0 0 10px 0;
 
 }
@@ -608,11 +661,23 @@ export default {
 
 .article-category {
   color: inherit;
+  border: unset;
+  background-color: unset;
+}
+
+.article-category:hover {
+  cursor: pointer;
 }
 
 .article-tag {
+  border: none;
   color: inherit;
   margin: 0 4px;
+  background-color: unset;
+}
+
+.article-tag:hover {
+  cursor: pointer;
 }
 
 /* 通用内容区玻璃效果 */
@@ -780,9 +845,11 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
 }
 
+.tag-item:hover {
+  cursor: pointer;
+}
 
 /* 网站统计信息 */
 .web-info {

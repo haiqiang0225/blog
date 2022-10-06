@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * description: ArticleController <br>
@@ -64,10 +62,19 @@ public class ArticleController {
         return result;
     }
 
+    /**
+     * description: getArticleDetails 获取文章详情<br>
+     * version: 1.0 <br>
+     * date: 2022/10/6 18:59 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param articleId 文章Id
+     * @param request   http request
+     * @return blog.seckill.cc.domain.Result
+     */
     @GetMapping("/getDetails")
     public Result getArticleDetails(
             @RequestParam("articleId") Long articleId,
-            @RequestParam(value = "queryArticle", defaultValue = "false") boolean query,
             HttpServletRequest request) {
         // 是否6个小时内访问过
         boolean visited = IpUtil.containsCookie("visited" + articleId, request);
@@ -89,8 +96,19 @@ public class ArticleController {
         return result;
     }
 
+    /**
+     * description: search 按关键字查找文章<br>
+     * version: 1.0 <br>
+     * date: 2022/10/6 19:01 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param start   起始index
+     * @param count   查询记录数
+     * @param keyWord 关键字
+     * @return blog.seckill.cc.domain.Result
+     */
     @GetMapping("/search")
-    public Result search(
+    public Result searchByKeyWord(
             @RequestParam("start") int start,
             @RequestParam("count") int count,
             @RequestParam("keyWord") String keyWord) {
@@ -103,8 +121,56 @@ public class ArticleController {
         return result;
     }
 
+    /**
+     * description: queryByTags 根据标签查找文章<br>
+     * version: 1.0 <br>
+     * date: 2022/10/6 19:01 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param start 起始index
+     * @param count 查询记录数
+     * @param tagId 标签ID
+     * @return blog.seckill.cc.domain.Result
+     */
+    @GetMapping("/tags")
+    public Result queryByTags(@RequestParam("start") int start,
+                              @RequestParam(value = "count", defaultValue = "-1") int count,
+                              @RequestParam("tagId") Long tagId) {
+        if (count <= 0) {
+            count = Integer.MAX_VALUE;
+        }
+        Result result = new Result();
+        List<Article> articles = articleService.selectArticlesByTag(start, count, tagId);
+        return result.put("articles", articles);
+    }
+
+
+    /**
+     * description: queryByCategory 根据文章查询文章<br>
+     * version: 1.0 <br>
+     * date: 2022/10/6 19:02 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param start      起始index
+     * @param count      查询记录数
+     * @param categoryId 分类ID
+     * @return blog.seckill.cc.domain.Result
+     */
+    @GetMapping("/category")
+    public Result queryByCategory(@RequestParam("start") int start,
+                                  @RequestParam(value = "count", defaultValue = "-1") int count,
+                                  @RequestParam("categoryId") Long categoryId) {
+        if (count <= 0) {
+            count = Integer.MAX_VALUE;
+        }
+        Result result = new Result();
+        List<Article> articles = articleService.selectArticlesByCategory(start, count, categoryId);
+        return result.put("articles", articles);
+    }
+
     private boolean isValidParam(String param) {
         return param != null;
     }
+
 
 }

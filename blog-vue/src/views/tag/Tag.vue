@@ -4,8 +4,8 @@
     <div class="tag-container content-glass">
       <h1>标签</h1>
 
-      <router-link
-          to=""
+      <button
+          @click="searchByTag(item.tagId)"
           class="tag-item"
           :style="{color: colorList[(index + randomSeed) % colorList.length]}"
           v-for="(item, index) in tags"
@@ -14,7 +14,7 @@
 
         {{ item.name }}
 
-      </router-link>
+      </button>
 
     </div>
   </div>
@@ -24,6 +24,7 @@
 import {ref} from "vue"
 import CommonBanner from "@/views/banner/CommonBanner";
 import axios from "@/utils/axios"
+import {ElMessage} from "element-plus";
 
 export default {
   name: "Tag",
@@ -41,7 +42,7 @@ export default {
           onInit.value = false;
         })
         .catch(err => {
-
+          console.log(err)
         })
 
 
@@ -74,6 +75,25 @@ export default {
 
     return {pic, tags, colorList, randomSeed, onInit};
   },
+  methods: {
+    // 根据Tag查询文章
+    async searchByTag(tagId) {
+      console.log(tagId)
+      let url = "/api/article/tags?start=0&tagId=" + tagId
+      let res = await axios.get(url)
+      if (res.data.code === 403) {
+        ElMessage.error("访问过快,请等待一分钟再访问!")
+        return;
+      }
+      if (res.data.articles === undefined || res.data.articles === null || res.data.articles.length <= 0) {
+        ElMessage.warning("暂时没有文章有该标签")
+        return;
+      }
+      await this.$store.commit('syncArticles', {articles: res.data.articles})
+      await this.$store.commit('setNeedSimpleLoad', false);
+      await this.$router.push("/")
+    }
+  }
 }
 </script>
 
@@ -121,5 +141,9 @@ export default {
   margin: 0 1% 10px 1%;
   float: left;
   text-overflow: ellipsis;
+}
+
+.tag-item:hover {
+  cursor: pointer;
 }
 </style>

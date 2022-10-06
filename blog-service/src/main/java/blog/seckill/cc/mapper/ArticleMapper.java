@@ -1,6 +1,7 @@
 package blog.seckill.cc.mapper;
 
 import blog.seckill.cc.entity.Article;
+import blog.seckill.cc.entity.Tag;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -52,4 +53,30 @@ public interface ArticleMapper extends BaseMapper<Article> {
     List<Article> searchArticleWithKeyWord(@Param("start") int start,
                                            @Param("count") int count,
                                            @Param("keyWord") String keyWord);
+
+    /**
+     * description: selectArticlesByTag 根据标签tag查询文章列表 <br>
+     * version: 1.0 <br>
+     * date: 2022/10/6 17:27 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param tagId
+     * @return java.util.List<blog.seckill.cc.entity.Article>
+     */
+    List<Article> selectArticlesByTag(@Param("start") int start,
+                                      @Param("count") int count,
+                                      @Param("tagId") Long tagId);
+
+    /**
+     * description: selectArticlesByCategory 根据分类查询文章列表 <br>
+     * version: 1.0 <br>
+     * date: 2022/10/6 17:28 <br>
+     * author: haiqiang0225@gmail.com <br>
+     *
+     * @param categoryId
+     * @return java.util.List<blog.seckill.cc.entity.Article>
+     */
+    List<Article> selectArticlesByCategory(@Param("start") int start,
+                                           @Param("count") int count,
+                                           @Param("categoryId") Long categoryId);
 }
