@@ -54,6 +54,7 @@ public class IndexServiceImpl extends ServiceImpl<VisitRecordMapper, VisitRecord
 
     @Override
     public int addTotalVisitCount(VisitRecord visitRecord) {
+        // 执行异步统计任务
         asyncTaskService.exec(visitRecord);
         synchronized (this) {
             totalVisitCount += 1;

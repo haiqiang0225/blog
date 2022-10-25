@@ -9,6 +9,7 @@ import blog.seckill.cc.service.ArticleService;
 import blog.seckill.cc.service.IndexService;
 import blog.seckill.cc.service.TagService;
 import blog.seckill.cc.util.IpUtil;
+import blog.seckill.cc.util.UserAgentUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,9 +65,13 @@ public class IndexController {
         // 说明6个小时内没有访问过
         int totalVisitCount = 0;
         if (!visited) {
+            // 设置访问记录相关属性
             VisitRecord visitRecord = new VisitRecord();
             visitRecord.setVisitDate(new Date());
-            visitRecord.setIp(IpUtil.getClientIpAddress(request));
+            String clientIpAddress = IpUtil.getClientIpAddress(request);
+            visitRecord.setIp(clientIpAddress);
+            visitRecord.setVisitorLocation(IpUtil.getIpPhysicalLocation(clientIpAddress));
+            visitRecord.setVisitDevice(UserAgentUtils.getDeviceType(request));
             totalVisitCount = indexService.addTotalVisitCount(visitRecord);
         } else {
             totalVisitCount = indexService.getTotalVisitCount();
