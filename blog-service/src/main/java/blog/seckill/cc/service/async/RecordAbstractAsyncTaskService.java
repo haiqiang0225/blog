@@ -3,12 +3,12 @@ package blog.seckill.cc.service.async;
 import java.util.ArrayList;
 
 /**
- * description: RecordAsyncTaskService <br>
+ * description: RecordAbstractAsyncTaskService <br>
  * date: 2022/8/28 10:00 <br>
  * author: haiqiang0225@gmail.com <br>
  * version: 1.0 <br>
  */
-public abstract class RecordAsyncTaskService<E> extends AsyncTaskService {
+public abstract class RecordAbstractAsyncTaskService<E> extends AbstractAsyncTaskService {
 
     // 默认存储列表
     protected final ArrayList<E> recordArrayList = new ArrayList<>();
@@ -37,7 +37,7 @@ public abstract class RecordAsyncTaskService<E> extends AsyncTaskService {
 
         @Override
         protected void doRunTask() {
-            synchronized (RecordAsyncTaskService.this) {
+            synchronized (RecordAbstractAsyncTaskService.this) {
                 recordArrayList.add(r);
             }
         }

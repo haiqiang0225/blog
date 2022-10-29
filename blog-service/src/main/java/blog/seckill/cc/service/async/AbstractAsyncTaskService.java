@@ -12,14 +12,14 @@ import java.util.concurrent.locks.LockSupport;
  * author: hq <br>
  * version: 1.0 <br>
  * <p>
- * 需要重写 {@link AsyncTaskService#doSync()}方法实现业务逻辑.
- * 该类会自动进行调度执行{@link AsyncTaskService#doSync()}方法.
+ * 需要重写 {@link AbstractAsyncTaskService#doSync()}方法实现业务逻辑.
+ * 该类会自动进行调度执行{@link AbstractAsyncTaskService#doSync()}方法.
  * 此外异步任务需要重写{@link BaseTask#doRunTask()} 方法.
  *
  * @see BaseTask
  */
 @Slf4j
-public abstract class AsyncTaskService {
+public abstract class AbstractAsyncTaskService {
 
     // CPU数量
     private static final int CPUS = Runtime.getRuntime().availableProcessors();
@@ -46,7 +46,7 @@ public abstract class AsyncTaskService {
     // 执行刷盘任务的线程
     private Thread theSyncThread;
 
-    public AsyncTaskService() {
+    public AbstractAsyncTaskService() {
         startScheduleTasks();
     }
 
@@ -161,7 +161,7 @@ public abstract class AsyncTaskService {
      * <p>
      * 所有子类都应该继承该类实现异步任务
      *
-     * @see AsyncTaskService
+     * @see AbstractAsyncTaskService
      */
     protected abstract class BaseTask implements Runnable {
         // 默认超时时间

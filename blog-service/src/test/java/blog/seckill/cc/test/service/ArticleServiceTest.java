@@ -48,10 +48,11 @@ public class ArticleServiceTest extends TestBase {
 
     @Test
     public void testQueryRandom() {
-        List<Article> articles = articleService.queryRandomArticleList(5);
+        int count = 4;
+        List<Article> articles = articleService.queryRandomArticleList(count);
         assert !articles.isEmpty();
+        assert articles.size() == count;
         System.out.println(articles);
-
     }
 
     @Test
@@ -63,7 +64,7 @@ public class ArticleServiceTest extends TestBase {
         TimeUnit.SECONDS.sleep(3);
         article = articleService.getArticle(4L);
         System.out.println(">>>>>>>>>> new ViewCount: " + article.getViewCount());
-        assert  article.getViewCount() == l + 1;
+        assert article.getViewCount() == l + 1;
 
     }
 }

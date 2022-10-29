@@ -5,7 +5,7 @@ import blog.seckill.cc.entity.VisitRecord;
 import blog.seckill.cc.mapper.VisitRecordMapper;
 import blog.seckill.cc.mapper.WebInfoMapper;
 import blog.seckill.cc.service.IndexService;
-import blog.seckill.cc.service.async.RecordAsyncTaskService;
+import blog.seckill.cc.service.async.RecordAbstractAsyncTaskService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 @Slf4j
 public class IndexServiceImpl extends ServiceImpl<VisitRecordMapper, VisitRecord> implements IndexService {
 
-    private final RecordAsyncTaskService<VisitRecord> asyncTaskService = new RecordAsyncTaskService<VisitRecord>() {
+    private final RecordAbstractAsyncTaskService<VisitRecord> asyncTaskService = new RecordAbstractAsyncTaskService<VisitRecord>() {
         @Override
         protected boolean doSync() {
             boolean b = saveBatch(recordArrayList);

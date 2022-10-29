@@ -6,26 +6,27 @@ import blog.seckill.cc.entity.ArticleDetail;
 import blog.seckill.cc.mapper.ArticleDetailMapper;
 import blog.seckill.cc.mapper.ArticleMapper;
 import blog.seckill.cc.service.ArticleService;
-import blog.seckill.cc.service.async.ViewCountAsyncTaskService;
+import blog.seckill.cc.service.async.ViewCountAbstractAsyncTaskService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * description: ArticleServiceImpl <br>
+ * description: ArticleServiceImplAbstract <br>
  * date: 2022/7/7 17:05 <br>
  * author: hq <br>
  * version: 1.0 <br>
  */
 @Service
 @Slf4j
-public class ArticleServiceImpl extends ViewCountAsyncTaskService implements ArticleService {
+public class ArticleServiceImplAbstract extends ViewCountAbstractAsyncTaskService implements ArticleService {
     @Resource
     private ArticleMapper articleMapper;
 
@@ -39,7 +40,7 @@ public class ArticleServiceImpl extends ViewCountAsyncTaskService implements Art
     @QueryAtInit(tableId = "article_id", mapperClass = ArticleMapper.class)
     private final Integer totalCount = 0;
 
-    public ArticleServiceImpl() {
+    public ArticleServiceImplAbstract() {
         startScheduleTasks();
     }
 
@@ -50,19 +51,32 @@ public class ArticleServiceImpl extends ViewCountAsyncTaskService implements Art
 
     @Override
     public List<Article> queryRandomArticleList(int count) {
-        QueryWrapper<Article> queryWrapper = new QueryWrapper<>();
+        if (count >= totalCount) {
+            count = totalCount - 1;
+        }
+        // 随机文章列表
+        List<Article> articles = new ArrayList<>(count);
         // 记录已经生成过了的
         HashSet<Integer> alreadyGen = new HashSet<>();
-        for (int i = 0; i < count; i++) {
-            int rand = ThreadLocalRandom.current().nextInt(totalCount);
-            // 如果生成过了就继续获取
-            while (alreadyGen.contains(rand)) {
-                rand = ThreadLocalRandom.current().nextInt(totalCount);
+        // 有可能生成的id是数据库中不存在的id
+        // 因此生成的数量可能小于要求的数量,如果小于则继续尝试生成
+        while (articles.size() < count) {
+            QueryWrapper<Article> queryWrapper = new QueryWrapper<>();
+            // 需要查询的次数
+            int step = count - articles.size();
+            for (int i = 0; i < step; i++) {
+                int rand = ThreadLocalRandom.current().nextInt(totalCount);
+                // 如果生成过了就继续获取
+                while (alreadyGen.contains(rand)) {
+                    rand = ThreadLocalRandom.current().nextInt(totalCount);
+                }
+                alreadyGen.add(rand);
             }
-            alreadyGen.add(rand);
+            // 查询
+            queryWrapper.in("article_id", alreadyGen);
+            articles.addAll(articleMapper.selectList(queryWrapper));
         }
-        queryWrapper.in("article_id", alreadyGen);
-        return articleMapper.selectList(queryWrapper);
+        return articles;
     }
 
     @Override
